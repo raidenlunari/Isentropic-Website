@@ -21,5 +21,5 @@ test("phi renders in EB Garamond, not a fallback", async ({ page }) => {
   });
   expect(ratio).not.toBeCloseTo(1, 3);
 
-  await expect(page).toHaveScreenshot("wordmark.png");
+  await expect(mark).toHaveScreenshot("wordmark.png");
 });
