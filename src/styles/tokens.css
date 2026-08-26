@@ -1,0 +1,63 @@
+:root {
+  --background: #F5F4EF;
+  --background-hover: #EBEAE5;
+  --foreground: #000000;
+  --muted-foreground: #686868;
+  --card: #FFFFFF;
+  --card-soft: rgba(255, 255, 255, 0.6);
+  --border-soft: #D4D3CB;
+  --border-soft-hover: #C0BDAD;
+
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  --font-display: "EB Garamond Variable", "EB Garamond", Georgia, serif;
+  --font-body: "Source Sans 3 Variable", "Source Sans 3", system-ui, sans-serif;
+
+  --measure-index: 1120px;
+  --measure-prose: 768px;
+  --pad-x: 24px;
+  --rail-offset: 24px;
+  --tick-size: 7px;
+  --transition: 150ms;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 20px;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+.skip-link:focus {
+  left: var(--pad-x);
+  top: 8px;
+  z-index: 10;
+  background: var(--card);
+  border: 1px solid var(--foreground);
+  padding: 8px 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

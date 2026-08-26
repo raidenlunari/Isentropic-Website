@@ -1,0 +1,30 @@
+{
+  "name": "isentropic-website",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=20.3.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "test": "vitest",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "@fontsource-variable/eb-garamond": "^5.3.0",
+    "@fontsource-variable/source-sans-3": "^5.3.0",
+    "astro": "^7.2.7"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.62.1",
+    "vitest": "^4.1.11"
+  }
+}
