@@ -47,6 +47,65 @@ test("body text renders in the Source Sans body face, not a fallback", async ({
   expect(family).toContain("Source Sans");
 });
 
+// The 2026-08-12 post is enriched with representative Markdown (headings,
+// lists, a blockquote, inline code, a fenced code block, a table, and a
+// link) specifically so the reading layer's heading, list, and scroll
+// rules are exercised by real content and a committed test rather than
+// staying proven only in principle.
+test("headings render in the reading layer, and the article has exactly one h1", async ({
+  page,
+}) => {
+  await page.goto("/blog/2026-08-12-summer-camp-program-report");
+
+  // Exactly one h1 on the whole document - the article title from
+  // ArticleLayout - and none inside the rendered Markdown body itself.
+  await expect(page.locator("h1")).toHaveCount(1);
+  await expect(page.locator(".prose h1")).toHaveCount(0);
+
+  // The post body's headings start at h2, per the single-h1 rule.
+  const tags = await page
+    .locator(".prose :is(h2, h3, h4, h5, h6)")
+    .evaluateAll((els) => els.map((el) => el.tagName));
+  expect(tags.length).toBeGreaterThan(0);
+  expect(tags[0]).toBe("H2");
+  expect(tags).toContain("H3");
+
+  // Body headings render in the display face, not the body face.
+  const family = await page
+    .locator(".prose h2")
+    .first()
+    .evaluate((el) => getComputedStyle(el).fontFamily);
+  expect(family).toContain("Garamond");
+});
+
+test("a wide table and a wide code block scroll within themselves, not the page, at 360px", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 360, height: 900 });
+  await page.goto("/blog/2026-08-12-summer-camp-program-report");
+
+  const table = page.locator(".prose table").first();
+  const tableMetrics = await table.evaluate((el) => ({
+    scrollWidth: el.scrollWidth,
+    clientWidth: el.clientWidth,
+  }));
+  expect(tableMetrics.scrollWidth).toBeGreaterThan(tableMetrics.clientWidth);
+
+  const pre = page.locator(".prose pre").first();
+  const preMetrics = await pre.evaluate((el) => ({
+    scrollWidth: el.scrollWidth,
+    clientWidth: el.clientWidth,
+  }));
+  expect(preMetrics.scrollWidth).toBeGreaterThan(preMetrics.clientWidth);
+
+  // The content scrolls; the page itself must not.
+  const pageMetrics = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth,
+  }));
+  expect(pageMetrics.scrollWidth).toBeLessThanOrEqual(pageMetrics.clientWidth);
+});
+
 // Every PostCard on every index page has linked to /blog/<id>/ since Task 5,
 // but the route did not exist until this task - every one of those links
 // was a 404. This test collects every card href actually emitted into the
