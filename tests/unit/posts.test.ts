@@ -4,6 +4,7 @@ import {
   publishedPosts,
   filterByTopic,
   withYearMarkers,
+  sortByKind,
 } from "../../src/lib/posts";
 
 const post = (id: string, date: string, topics: string[] = [], draft = false) =>
@@ -75,5 +76,29 @@ describe("withYearMarkers", () => {
       post("c", "2025-12-01"),
     ]);
     expect(out.map((e) => e.yearMarker)).toEqual(["2025", "2026", null]);
+  });
+});
+
+const product = (id: string, kind: "hardware" | "software") =>
+  ({ id, data: { kind } }) as any;
+
+describe("sortByKind", () => {
+  it("puts hardware before software", () => {
+    const out = sortByKind([product("a", "software"), product("b", "hardware")]);
+    expect(out.map((p) => p.id)).toEqual(["b", "a"]);
+  });
+  it("preserves relative order within the same kind", () => {
+    const out = sortByKind([
+      product("a", "hardware"),
+      product("b", "software"),
+      product("c", "hardware"),
+      product("d", "software"),
+    ]);
+    expect(out.map((p) => p.id)).toEqual(["a", "c", "b", "d"]);
+  });
+  it("does not mutate its input", () => {
+    const input = [product("a", "software"), product("b", "hardware")];
+    sortByKind(input);
+    expect(input.map((p) => p.id)).toEqual(["a", "b"]);
   });
 });

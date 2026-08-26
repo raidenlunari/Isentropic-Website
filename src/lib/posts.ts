@@ -24,6 +24,21 @@ export function filterByTopic<T extends Topical>(items: T[], topic: Topic): T[] 
   return items.filter((i) => i.data.topics.includes(topic));
 }
 
+const PRODUCT_KIND_ORDER = ["hardware", "software"] as const;
+type Kinded = { data: { kind: (typeof PRODUCT_KIND_ORDER)[number] } };
+
+// Groups product entries by kind for display purposes without an explicit
+// GROUP BY: a stable sort on kind order (hardware, then software) yields
+// the same visual grouping while keeping entries within a kind in their
+// original relative order.
+export function sortByKind<T extends Kinded>(items: T[]): T[] {
+  return [...items].sort(
+    (a, b) =>
+      PRODUCT_KIND_ORDER.indexOf(a.data.kind) -
+      PRODUCT_KIND_ORDER.indexOf(b.data.kind),
+  );
+}
+
 export function withYearMarkers<T extends Dated>(
   items: T[],
 ): Array<{ item: T; yearMarker: string | null }> {
