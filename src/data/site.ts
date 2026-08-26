@@ -4,7 +4,7 @@ export const site = {
   phi: "φ",
   description:
     "Isentropic Robotics fosters STEM education through support for competitive robotics and community events for aspiring engineering students.",
-  email: "contact@isentropicrobotics.org",
+  email: "contact@isentropic.tech",
   sponsorPacket: "/files/isentropic-sponsor-packet.pdf",
   formNames: {
     sponsor: "sponsor-contact",

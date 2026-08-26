@@ -33,7 +33,7 @@ test("article metadata block shows the publish date and contact email", async ({
   const meta = page.locator(".article-meta");
   await expect(meta).toContainText("Published");
   await expect(meta).toContainText("August 12, 2026");
-  await expect(meta.locator("a[href='mailto:contact@isentropicrobotics.org']")).toBeVisible();
+  await expect(meta.locator("a[href='mailto:contact@isentropic.tech']")).toBeVisible();
 });
 
 test("body text renders in the Source Sans body face, not a fallback", async ({

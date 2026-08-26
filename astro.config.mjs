@@ -5,6 +5,6 @@ import sitemap from "@astrojs/sitemap";
 // https://astro.build/config
 export default defineConfig({
   output: "static",
-  site: "https://isentropicrobotics.org",
+  site: "https://isentropic.tech",
   integrations: [sitemap()],
 });
