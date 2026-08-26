@@ -39,6 +39,39 @@ export function sortByKind<T extends Kinded>(items: T[]): T[] {
   );
 }
 
+type Openable = { data: { open: boolean } };
+
+export function openRoles<T extends Openable>(items: T[]): T[] {
+  return items.filter((i) => i.data.open);
+}
+
+type Categorized = { data: { category: string; order: number } };
+
+// Groups role entries by category for display on the Contribute page,
+// without an explicit GROUP BY: entries are first stably sorted by their
+// declared `order` within the whole set, then bucketed by category in the
+// order each category is first encountered. This keeps roles within a
+// category in their intended display order while letting the page render
+// one Disclosure per category.
+export function groupRolesByCategory<T extends Categorized>(
+  items: T[],
+): Array<{ category: string; roles: T[] }> {
+  const sorted = [...items].sort((a, b) => a.data.order - b.data.order);
+  const order: string[] = [];
+  const groups = new Map<string, T[]>();
+  for (const item of sorted) {
+    const { category } = item.data;
+    const list = groups.get(category);
+    if (list) {
+      list.push(item);
+    } else {
+      groups.set(category, [item]);
+      order.push(category);
+    }
+  }
+  return order.map((category) => ({ category, roles: groups.get(category)! }));
+}
+
 export function withYearMarkers<T extends Dated>(
   items: T[],
 ): Array<{ item: T; yearMarker: string | null }> {

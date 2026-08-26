@@ -5,6 +5,8 @@ import {
   filterByTopic,
   withYearMarkers,
   sortByKind,
+  openRoles,
+  groupRolesByCategory,
 } from "../../src/lib/posts";
 
 const post = (id: string, date: string, topics: string[] = [], draft = false) =>
@@ -100,5 +102,70 @@ describe("sortByKind", () => {
     const input = [product("a", "software"), product("b", "hardware")];
     sortByKind(input);
     expect(input.map((p) => p.id)).toEqual(["a", "b"]);
+  });
+});
+
+const role = (
+  id: string,
+  category: string,
+  order: number,
+  open = true,
+) => ({ id, data: { category, order, open } }) as any;
+
+describe("openRoles", () => {
+  it("keeps only roles marked open", () => {
+    const out = openRoles([
+      role("a", "Engineering", 0, true),
+      role("b", "Engineering", 1, false),
+    ]);
+    expect(out.map((r) => r.id)).toEqual(["a"]);
+  });
+
+  it("does not mutate its input", () => {
+    const input = [role("a", "Engineering", 0, true), role("b", "Engineering", 1, false)];
+    openRoles(input);
+    expect(input).toHaveLength(2);
+  });
+});
+
+describe("groupRolesByCategory", () => {
+  it("buckets roles under their category", () => {
+    const out = groupRolesByCategory([
+      role("a", "Engineering", 0),
+      role("b", "Education", 0),
+      role("c", "Engineering", 1),
+    ]);
+    expect(out.map((g) => g.category)).toEqual(["Engineering", "Education"]);
+    expect(out.find((g) => g.category === "Engineering")!.roles.map((r) => r.id)).toEqual([
+      "a",
+      "c",
+    ]);
+    expect(out.find((g) => g.category === "Education")!.roles.map((r) => r.id)).toEqual(["b"]);
+  });
+
+  it("orders roles within a category by their order field", () => {
+    const out = groupRolesByCategory([
+      role("second", "Engineering", 1),
+      role("first", "Engineering", 0),
+    ]);
+    expect(out[0].roles.map((r) => r.id)).toEqual(["first", "second"]);
+  });
+
+  it("orders categories by first appearance in order-sorted input", () => {
+    const out = groupRolesByCategory([
+      role("a", "Engineering", 5),
+      role("b", "Education", 0),
+    ]);
+    expect(out.map((g) => g.category)).toEqual(["Education", "Engineering"]);
+  });
+
+  it("does not mutate its input", () => {
+    const input = [role("a", "Engineering", 1), role("b", "Engineering", 0)];
+    groupRolesByCategory(input);
+    expect(input.map((r) => r.id)).toEqual(["a", "b"]);
+  });
+
+  it("returns an empty array unchanged", () => {
+    expect(groupRolesByCategory([])).toEqual([]);
   });
 });
