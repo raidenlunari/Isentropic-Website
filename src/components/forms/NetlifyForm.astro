@@ -1,0 +1,73 @@
+---
+interface Props {
+  name: string;
+  action?: string;
+  multipart?: boolean;
+}
+
+const { name, action = "/thanks", multipart = false } = Astro.props;
+---
+
+<form
+  name={name}
+  method="POST"
+  action={action}
+  data-netlify="true"
+  netlify-honeypot="bot-field"
+  enctype={multipart ? "multipart/form-data" : undefined}
+>
+  <input type="hidden" name="form-name" value={name} />
+  <p class="hp">
+    <label>
+      Leave this field empty
+      <input name="bot-field" tabindex="-1" autocomplete="off" />
+    </label>
+  </p>
+  <slot />
+  <div class="form-status" role="status" aria-live="polite"></div>
+  <button type="submit">Send</button>
+</form>
+
+<style>
+  form {
+    display: flex;
+    flex-direction: column;
+    max-width: var(--measure-prose);
+  }
+
+  /* Visually hidden but present in the DOM and tab order of assistive
+     tech that ignores CSS. `display: none` would remove it from the
+     accessibility tree entirely and defeat the honeypot. */
+  .hp {
+    position: absolute;
+    left: -9999px;
+  }
+
+  .form-status {
+    min-height: 20px;
+    margin: 4px 0 16px;
+    font-size: 12px;
+    color: var(--muted-foreground);
+  }
+
+  button[type="submit"] {
+    align-self: flex-start;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    padding: 10px 20px;
+    background: var(--foreground);
+    color: var(--background);
+    border: 1px solid var(--foreground);
+    cursor: pointer;
+    transition: opacity var(--transition);
+  }
+
+  button[type="submit"]:hover {
+    opacity: 0.85;
+  }
+
+  button[type="submit"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+</style>

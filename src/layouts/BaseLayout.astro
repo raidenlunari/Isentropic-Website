@@ -45,6 +45,10 @@ const canonicalURL = new URL(Astro.url.pathname, siteURL);
       </div>
     </main>
     <Footer />
+    <script>
+      import { enhanceForms } from "../scripts/forms";
+      enhanceForms();
+    </script>
   </body>
 </html>
 
