@@ -4,7 +4,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Rail from "../components/Rail.astro";
 import RailItem from "../components/RailItem.astro";
 import Disclosure from "../components/Disclosure.astro";
-import { sortByDateDesc, withYearMarkers } from "../lib/posts";
+import PostCard from "../components/PostCard.astro";
+import {
+  filterByTopic,
+  publishedPosts,
+  sortByDateDesc,
+  withYearMarkers,
+} from "../lib/posts";
 import { formatDate } from "../lib/dates";
 
 const allEvents = await getCollection("events");
@@ -15,10 +21,23 @@ const events = await Promise.all(
     return { item, yearMarker, Content };
   }),
 );
+
+const allPosts = await getCollection("blog");
+const communityUpdates = withYearMarkers(
+  sortByDateDesc(filterByTopic(publishedPosts(allPosts), "community")),
+);
 ---
 
 <BaseLayout title="Community">
   <h1>Community</h1>
+  <p class="intro">
+    Isentropic Robotics runs a season-round calendar of workshops,
+    scrimmages, and outreach events alongside its competition program, and
+    partners with local schools and volunteer mentors to extend that work
+    beyond the team itself. The timeline below records those events; the
+    updates that follow report on the outreach, mentorship, and education
+    programs that connect the team to the wider community.
+  </p>
   <div class="events">
     <Rail>
       {events.map(({ item, yearMarker, Content }) => (
@@ -33,4 +52,42 @@ const events = await Promise.all(
       ))}
     </Rail>
   </div>
+
+  <h2>Community updates</h2>
+  <div class="updates">
+    <Rail>
+      {communityUpdates.map(({ item, yearMarker }) => (
+        <RailItem tier={item.data.tier} yearMarker={yearMarker}>
+          <PostCard
+            href={`/blog/${item.id}/`}
+            title={item.data.title}
+            date={item.data.date}
+            summary={item.data.summary}
+            tier={item.data.tier}
+          />
+        </RailItem>
+      ))}
+    </Rail>
+  </div>
 </BaseLayout>
+
+<style>
+  .intro {
+    max-width: var(--measure-prose);
+    margin: 0 0 40px;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--foreground);
+  }
+
+  h2 {
+    margin: 48px 0 16px;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 400;
+  }
+
+  .events {
+    margin-bottom: 8px;
+  }
+</style>
