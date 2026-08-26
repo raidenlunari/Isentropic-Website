@@ -38,7 +38,14 @@ const tick = tier === "event" ? "tick tick--event" : tickClass(tier);
     position: relative;
   }
   .rail-item-body--marked {
-    margin-top: 32px;
+    /* Clears the .year label rendered above this entry: 1lh is the body's
+       inherited line-height (20px today), which .year also inherits since
+       neither .rail-item nor .rail-item-body overrides it; +8px matches
+       .year's own `padding: 4px 0` (top+bottom); +4px is a breathing gap
+       so the label and the card never sit flush. This derives from, and
+       must be revisited alongside, body's line-height (tokens.css) and
+       .year's padding (below) - not a value independent of either. */
+    margin-top: calc(1lh + 8px + 4px);
   }
 
   .tick { position: absolute; left: 16px; transform: translateX(-50%); top: 11px; }

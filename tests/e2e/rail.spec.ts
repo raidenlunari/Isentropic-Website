@@ -36,3 +36,15 @@ test("year markers appear once per year", async ({ page }) => {
   const years = await page.locator(".year").allTextContents();
   expect(new Set(years).size).toBe(years.length);
 });
+
+test("a marked entry's year label sits entirely above its tick", async ({ page }) => {
+  await page.goto("/");
+  const { yearBottom, tickTop } = await page.evaluate(() => {
+    const items = Array.from(document.querySelectorAll(".rail-item"));
+    const marked = items.find((li) => li.querySelector(".year"));
+    const year = marked!.querySelector(".year")!.getBoundingClientRect();
+    const tick = marked!.querySelector('[class*="tick--"]')!.getBoundingClientRect();
+    return { yearBottom: year.bottom, tickTop: tick.top };
+  });
+  expect(yearBottom).toBeLessThanOrEqual(tickTop);
+});
