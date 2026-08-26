@@ -32,7 +32,7 @@ By the end of day three this year, most groups had working code resembling the f
 
 ```
 def follow_line():
-    # falls back to the last known-good heading whenever both edge sensors report clear for more than one full control loop tick
+    # checks the left edge sensor first, then the right edge sensor, and only drives straight when neither one currently detects the tape boundary line
     while True:
         if sensor_left():
             turn_left(10)

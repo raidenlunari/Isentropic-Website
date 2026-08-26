@@ -94,11 +94,24 @@
   white-space: pre;
 }
 
-.prose table {
-  display: block;
+/* The rehype-wrap-tables plugin (astro.config.mjs) wraps every rendered
+   <table> in this div. The wrapper carries the horizontal scrolling so
+   the table itself can keep `display: table` - and therefore its
+   implicit table/row/cell accessibility roles, which a screen reader
+   relies on for row/column navigation and header association. Putting
+   `overflow-x: auto` on the table directly (an earlier version of this
+   file did) computes the table's display away from `table` and silently
+   strips those roles. */
+.prose .table-scroll {
   overflow-x: auto;
   max-width: 100%;
   margin: 0 0 24px;
+}
+
+.prose table {
+  display: table;
+  width: 100%;
+  margin: 0;
   border-collapse: collapse;
   font-family: var(--font-mono);
   font-size: 14px;

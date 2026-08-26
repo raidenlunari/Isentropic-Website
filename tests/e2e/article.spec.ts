@@ -1,7 +1,9 @@
 import { test, expect } from "@playwright/test";
 
+const ARTICLE_PATH = "/blog/2026-08-12-summer-camp-program-report";
+
 test("article renders in the reading layer", async ({ page }) => {
-  await page.goto("/blog/2026-08-12-summer-camp-program-report");
+  await page.goto(ARTICLE_PATH);
   const h1 = page.locator("h1");
   await expect(h1).toBeVisible();
   const family = await h1.evaluate((el) => getComputedStyle(el).fontFamily);
@@ -13,13 +15,36 @@ test("article renders in the reading layer", async ({ page }) => {
   expect(body).toBe("18px");
 });
 
-test("draft posts do not get a route", async ({ page }) => {
+// _TEMPLATE.md is excluded before publishedPosts() ever runs, by the
+// content loader's own glob pattern ("**/[^_]*.md" in content.config.ts).
+// This proves an unknown/underscore-excluded slug 404s; it does NOT
+// exercise the draft filter itself - see the next test for that, which
+// uses a real draft post the glob does include.
+test("an unknown slug excluded by the content loader's glob returns 404", async ({
+  page,
+}) => {
   const response = await page.goto("/blog/_TEMPLATE");
   expect(response?.status()).toBe(404);
 });
 
+// src/content/blog/2026-08-20-fall-build-season-preview.md has draft: true
+// and an ordinary (non-underscore) filename, so the loader's glob includes
+// it and only publishedPosts() in getStaticPaths keeps it off the site.
+// Deleting `publishedPosts(...)` from src/pages/blog/[...slug].astro turns
+// this test red - confirmed by hand before committing; see
+// task-12-report.md for the failing output.
+test("draft posts do not get a route, and are excluded from the homepage", async ({
+  page,
+}) => {
+  const response = await page.goto("/blog/2026-08-20-fall-build-season-preview");
+  expect(response?.status()).toBe(404);
+
+  await page.goto("/");
+  await expect(page.getByText("Fall build season preview")).toHaveCount(0);
+});
+
 test("prose column does not exceed its measure", async ({ page }) => {
-  await page.goto("/blog/2026-08-12-summer-camp-program-report");
+  await page.goto(ARTICLE_PATH);
   const width = await page
     .locator(".prose")
     .evaluate((el) => el.getBoundingClientRect().width);
@@ -29,22 +54,65 @@ test("prose column does not exceed its measure", async ({ page }) => {
 test("article metadata block shows the publish date and contact email", async ({
   page,
 }) => {
-  await page.goto("/blog/2026-08-12-summer-camp-program-report");
+  await page.goto(ARTICLE_PATH);
   const meta = page.locator(".article-meta");
   await expect(meta).toContainText("Published");
   await expect(meta).toContainText("August 12, 2026");
   await expect(meta.locator("a[href='mailto:contact@isentropic.tech']")).toBeVisible();
 });
 
-test("body text renders in the Source Sans body face, not a fallback", async ({
+// getComputedStyle(...).fontFamily only reports the CSS-declared font
+// stack - it would still say `"EB Garamond Variable", ...` even if that
+// file 404'd and the browser silently fell back to Georgia. These two
+// tests use the same canvas text-metrics technique as the Task 1
+// precedent in tests/e2e/wordmark.spec.ts: a glyph rendered by a fallback
+// face measures a different width than one rendered by the real face, so
+// a font that failed to load produces a ratio close to 1 instead of one
+// that differs from it.
+test("the article title is measurably EB Garamond, not a fallback", async ({
   page,
 }) => {
-  await page.goto("/blog/2026-08-12-summer-camp-program-report");
-  const family = await page
-    .locator(".prose p")
-    .first()
-    .evaluate((el) => getComputedStyle(el).fontFamily);
-  expect(family).toContain("Source Sans");
+  await page.goto(ARTICLE_PATH);
+  const ratio = await page.evaluate(async () => {
+    const h1 = document.querySelector("h1")!;
+    const cs = getComputedStyle(h1);
+    // Wait for the exact face the assertion cares about before measuring,
+    // so an in-flight load can't get measured as if it were the fallback.
+    await document.fonts.load('60px "EB Garamond Variable"');
+    await document.fonts.ready;
+    const measure = (text: string, family: string, size: string) => {
+      const c = document.createElement("canvas").getContext("2d")!;
+      c.font = `${size} ${family}`;
+      return c.measureText(text).width;
+    };
+    const probe = "Summer camp program report";
+    const inFace = measure(probe, cs.fontFamily, cs.fontSize);
+    const inFallback = measure(probe, "Georgia, serif", cs.fontSize);
+    return inFace / inFallback;
+  });
+  expect(ratio).not.toBeCloseTo(1, 3);
+});
+
+test("the article body is measurably Source Sans 3, not a fallback", async ({
+  page,
+}) => {
+  await page.goto(ARTICLE_PATH);
+  const ratio = await page.evaluate(async () => {
+    const p = document.querySelector(".prose p")!;
+    const cs = getComputedStyle(p);
+    await document.fonts.load('18px "Source Sans 3 Variable"');
+    await document.fonts.ready;
+    const measure = (text: string, family: string, size: string) => {
+      const c = document.createElement("canvas").getContext("2d")!;
+      c.font = `${size} ${family}`;
+      return c.measureText(text).width;
+    };
+    const probe = "The quick brown fox jumps over the lazy dog";
+    const inFace = measure(probe, cs.fontFamily, cs.fontSize);
+    const inFallback = measure(probe, "system-ui, sans-serif", cs.fontSize);
+    return inFace / inFallback;
+  });
+  expect(ratio).not.toBeCloseTo(1, 3);
 });
 
 // The 2026-08-12 post is enriched with representative Markdown (headings,
@@ -55,7 +123,7 @@ test("body text renders in the Source Sans body face, not a fallback", async ({
 test("headings render in the reading layer, and the article has exactly one h1", async ({
   page,
 }) => {
-  await page.goto("/blog/2026-08-12-summer-camp-program-report");
+  await page.goto(ARTICLE_PATH);
 
   // Exactly one h1 on the whole document - the article title from
   // ArticleLayout - and none inside the rendered Markdown body itself.
@@ -82,10 +150,13 @@ test("a wide table and a wide code block scroll within themselves, not the page,
   page,
 }) => {
   await page.setViewportSize({ width: 360, height: 900 });
-  await page.goto("/blog/2026-08-12-summer-camp-program-report");
+  await page.goto(ARTICLE_PATH);
 
-  const table = page.locator(".prose table").first();
-  const tableMetrics = await table.evaluate((el) => ({
+  // rehype-wrap-tables (astro.config.mjs) wraps every <table> in a
+  // .table-scroll div; that wrapper is what scrolls, not the table
+  // itself - see the accessibility-role test below for why.
+  const tableScroll = page.locator(".prose .table-scroll").first();
+  const tableMetrics = await tableScroll.evaluate((el) => ({
     scrollWidth: el.scrollWidth,
     clientWidth: el.clientWidth,
   }));
@@ -104,6 +175,26 @@ test("a wide table and a wide code block scroll within themselves, not the page,
     clientWidth: document.documentElement.clientWidth,
   }));
   expect(pageMetrics.scrollWidth).toBeLessThanOrEqual(pageMetrics.clientWidth);
+});
+
+// A table needs `display: table` to keep its implicit table/row/cell
+// accessibility roles - putting `overflow-x: auto` directly on the table
+// (which computes its display away from `table`) silently strips them,
+// removing row/column navigation and header association for screen
+// reader users. getByRole("table") queries the browser's actual
+// accessibility tree, so this fails if that regression comes back, not
+// just a CSS property assertion.
+test("the table keeps its table accessibility role while its wrapper scrolls", async ({
+  page,
+}) => {
+  await page.goto(ARTICLE_PATH);
+  await expect(page.getByRole("table")).toHaveCount(1);
+
+  const display = await page
+    .locator(".prose table")
+    .first()
+    .evaluate((el) => getComputedStyle(el).display);
+  expect(display).toBe("table");
 });
 
 // Every PostCard on every index page has linked to /blog/<id>/ since Task 5,
