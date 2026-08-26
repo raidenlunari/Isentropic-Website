@@ -1,0 +1,102 @@
+---
+interface Props {
+  summary: string;
+  meta?: string;
+  open?: boolean;
+}
+
+const { summary, meta, open = false } = Astro.props;
+---
+<details open={open}>
+  <summary>
+    <span class="marker" aria-hidden="true"></span>
+    <span class="summary-label">{summary}</span>
+    {meta && <span class="summary-meta">{meta}</span>}
+  </summary>
+  <div class="disclosure-body">
+    <slot />
+  </div>
+</details>
+
+<style>
+  details {
+    margin-left: var(--rail-offset);
+    border: 1px solid transparent;
+    transition: background-color var(--transition), border-color var(--transition);
+  }
+
+  summary {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary:hover {
+    background: var(--background-hover);
+  }
+
+  .marker {
+    flex: 0 0 auto;
+    width: 12px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .marker::before {
+    content: "+";
+  }
+  details[open] .marker::before {
+    content: "\2212";
+  }
+
+  .summary-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 12px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .summary-meta {
+    flex-shrink: 0;
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+  }
+
+  /* Below the rail's own card-inset breakpoint, "date · location" meta text
+     is often too wide to share a line with the label without overflowing
+     a narrow viewport. Drop it to its own full-width line, indented to
+     align under the label (marker width + gap), and let it wrap normally
+     instead of forcing horizontal scroll. */
+  @media (max-width: 640px) {
+    summary {
+      flex-wrap: wrap;
+    }
+    .summary-meta {
+      flex-basis: 100%;
+      margin-left: 20px;
+      white-space: normal;
+    }
+  }
+
+  .disclosure-body {
+    padding: 0 12px 12px 32px;
+    font-size: 12px;
+    line-height: 20px;
+  }
+  .disclosure-body :global(p) {
+    margin: 0 0 8px;
+  }
+  .disclosure-body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

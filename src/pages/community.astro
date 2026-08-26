@@ -1,7 +1,36 @@
 ---
+import { getCollection, render } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Rail from "../components/Rail.astro";
+import RailItem from "../components/RailItem.astro";
+import Disclosure from "../components/Disclosure.astro";
+import { sortByDateDesc, withYearMarkers } from "../lib/posts";
+import { formatDate } from "../lib/dates";
+
+const allEvents = await getCollection("events");
+const eventEntries = withYearMarkers(sortByDateDesc(allEvents));
+const events = await Promise.all(
+  eventEntries.map(async ({ item, yearMarker }) => {
+    const { Content } = await render(item);
+    return { item, yearMarker, Content };
+  }),
+);
 ---
 
 <BaseLayout title="Community">
   <h1>Community</h1>
+  <div class="events">
+    <Rail>
+      {events.map(({ item, yearMarker, Content }) => (
+        <RailItem tier="event" yearMarker={yearMarker}>
+          <Disclosure
+            summary={item.data.title}
+            meta={`${formatDate(item.data.date)} · ${item.data.location}`}
+          >
+            <Content />
+          </Disclosure>
+        </RailItem>
+      ))}
+    </Rail>
+  </div>
 </BaseLayout>
