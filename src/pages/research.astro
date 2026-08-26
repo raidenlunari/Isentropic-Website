@@ -54,7 +54,7 @@ const researchUpdates = withYearMarkers(
           <Content />
           {item.data.manuscriptAvailable && (
             <div class="manuscript-request">
-              <h3>Request the manuscript</h3>
+              <h4>Request the manuscript</h4>
               <NetlifyForm name={site.formNames.manuscript}>
                 <input type="hidden" name="manuscript" value={item.data.title} />
                 <Field label="Name" name="name" required />
@@ -179,7 +179,7 @@ const researchUpdates = withYearMarkers(
     padding-top: 16px;
     border-top: 1px solid var(--border-soft);
   }
-  .manuscript-request h3 {
+  .manuscript-request h4 {
     margin: 0 0 12px;
     font-size: 14px;
     font-weight: 600;

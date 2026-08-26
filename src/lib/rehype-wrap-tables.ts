@@ -30,6 +30,12 @@ export function rehypeWrapTables() {
           className: ["table-scroll"],
           tabIndex: 0,
           role: "region",
+          // Fixed rather than caption-derived: GFM Markdown tables (this
+          // pipeline's only source of <table>) have no caption syntax, so
+          // there is no real caption to read here - inferring a label from
+          // the nearest heading would be a guess, not a derivation, and
+          // could misattribute on a section with more than one table.
+          // Harmless while no page has two tables; revisit if one ever does.
           ariaLabel: "Scrollable table",
         },
         children: [node],
