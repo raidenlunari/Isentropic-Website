@@ -30,7 +30,7 @@ matter how long it sits there.
 Every content file is written in **Markdown**, a simple way of marking up
 plain text so it turns into a formatted webpage: for example, a line
 starting with `#` becomes a heading, and a line starting with `-` becomes
-a bullet point. The [Writing inside a post](#task-11-writing-inside-a-blog-post-body)
+a bullet point. The [Writing inside a post](#task-11-writing-inside-a-post-body)
 section near the end of this guide covers the Markdown you are likely to
 need.
 
@@ -58,9 +58,11 @@ GitHub.com:
    start editing.
 
 **To create a new file by copying the template:**
-1. Open the template file (`_TEMPLATE.md`) in the relevant folder, as
-   above.
-2. Click the pencil icon to edit it, select all of its text, and copy it.
+1. Open the template file (`_TEMPLATE.md`) for editing, using the "To
+   open an existing file" steps above — this leaves you looking at its
+   text in an editable box.
+2. Select all of its text and copy it. Then leave without saving — do
+   not commit any change to the template file itself.
 3. Go back to the folder, click "Add file," then "Create new file."
 4. Give the new file a name (each procedure below explains how to choose
    one) ending in `.md`, and paste the copied template text into it.
@@ -138,18 +140,33 @@ see what an in-progress post looks like.
 
 ## Task 3: Add a board member
 
-**Folder:** `src/content/board/`
-**Template:** `_TEMPLATE.md` in that folder
+**Folder for the photo:** `public/images/board/`
+**Folder for the entry:** `src/content/board/`
+**Template:** `_TEMPLATE.md` in `src/content/board/`
 
-1. Create a new file in `src/content/board/` by copying the template.
-   Name it after the person, all lowercase and separated by hyphens —
-   for example, `jane-doe.md`.
-2. Fill in the frontmatter:
+Board member entries have no "work in progress" setting — there is no
+`draft` field for this collection, unlike blog posts. Whatever you save
+here goes live at the next automatic rebuild. Because of that, this
+procedure uploads the photo first and does not save the new entry until
+a real photo is already in place, so a broken image never reaches the
+live site.
+
+1. Get a photograph of the new board member ready as an image file.
+   Common formats such as `.jpg` and `.png` both work, and any size or
+   shape is fine — see the note below on why. Name the file after the
+   person, all lowercase and separated by hyphens — for example,
+   `jane-doe.jpg`.
+2. Go to `public/images/board/` in the repository, click "Add file,"
+   then "Upload files," and upload that photo.
+3. Create a new file in `src/content/board/` by copying the template.
+   Name it after the person the same way, for example `jane-doe.md`.
+4. Fill in the frontmatter:
    - `name`: full name, as it should appear on their card.
    - `role`: their title on the board, shown beneath the name.
-   - `photo`: leave this for now if you do not yet have a photo file in
-     place — see Task 4, which covers adding the image and setting this
-     field together.
+   - `photo`: the path to the photo you uploaded in step 2, starting
+     with `/images/board/` — for example, `/images/board/jane-doe.jpg`.
+     This must match the uploaded file's name exactly, including its
+     extension (the letters after the last dot, such as `.jpg`).
    - `alt`: a plain-language description of the photo, for people using
      a screen reader and for anyone whose browser fails to load the
      image. Describe the person, not the file name — for example,
@@ -157,28 +174,37 @@ see what an in-progress post looks like.
    - `order`: a whole number controlling where this person's card
      appears on the board grid — lower numbers appear first. Pick a
      number not already used by another board member.
-3. Below the frontmatter, write the person's bio paragraph in Markdown.
-4. Save the file.
+5. Below the frontmatter, write the person's bio paragraph in Markdown.
+6. Save the file. **Do this only after step 2's photo is already
+   uploaded and the `photo` field in step 4 points at it correctly.** Do
+   not save with the template's placeholder path
+   (`/images/board/replace-me.jpg`) still in the `photo` field — no file
+   exists at that path, and because this collection has no way to hold
+   an entry back, saving it shows a broken image on the live board
+   immediately.
 
-## Task 4: Replace a headshot (or add one for a new board member)
+Board photos are cropped to a square automatically and displayed at a
+fixed size on the page, which is why any photo size or shape works
+without breaking the layout.
+
+## Task 4: Replace an existing board member's headshot
 
 **Folder for the image:** `public/images/board/`
 
-Board photos are cropped to a square automatically and displayed at a
-fixed size on the page, so you can use a photo of any size or shape —
-a portrait, a landscape crop, anything — without breaking the layout.
 The photo files currently in place are simple placeholder graphics; any
-of them can be replaced with a real photograph at any time.
+of them can be replaced with a real photograph at any time, using this
+procedure rather than Task 3 (which is for a person who does not yet
+have an entry at all).
 
-1. In `public/images/board/`, click "Add file," then "Upload files," and
-   upload the new photo. Common formats such as `.jpg` and `.png` both
-   work.
-2. Open the board member's content file in `src/content/board/` (see
-   Task 3 for naming), and set the `photo` field to the uploaded file's
-   path, starting with `/images/board/` — for example,
-   `/images/board/jane-doe.jpg`. This must match the uploaded file's name
-   exactly, including its extension (the letters after the last dot,
-   such as `.jpg`).
+1. Upload the new photo to `public/images/board/`: go to that folder,
+   click "Add file," then "Upload files," and upload it. Common formats
+   such as `.jpg` and `.png` both work, and any size or shape is fine,
+   as explained under Task 3.
+2. Open the board member's existing content file in
+   `src/content/board/`, and set the `photo` field to the uploaded
+   file's path, starting with `/images/board/` — for example,
+   `/images/board/jane-doe.jpg`. This must match the uploaded file's
+   name exactly, including its extension.
 3. Make sure the `alt` field still accurately describes the new photo,
    and update it if it does not.
 4. Save the file. You may also delete the old, now-unused image file
@@ -261,8 +287,38 @@ of them can be replaced with a real photograph at any time.
 To add a new role, create a new file in `src/content/roles/` by copying
 the template, name it after the role (lowercase, hyphenated — for
 example, `web-volunteer.md`), and fill in `title`, `category`,
-`location`, and `commitment`. Write the responsibilities and
-qualifications in Markdown below the frontmatter.
+`location`, `commitment`, and `order`. **Read the warning below before
+choosing the `order` value** — it decides more than just this role's own
+position. Write the responsibilities and qualifications in Markdown
+below the frontmatter.
+
+**A warning about the `order` field.** Every role has an `order` field, a
+whole number that controls its position on the page. Roles are first
+sorted by this number *across every role on the whole site*, and only
+then grouped into their category sections (Engineering, Education, and
+so on) — the category sections themselves appear in whatever order their
+first role lands in after that site-wide sort. In practice, this means
+changing one role's `order` number does not just move that role within
+its own category — a very low or very high number can shift its entire
+category section earlier or later on the page.
+
+For example, in the roles that exist today, `build-team-volunteer.md`
+(category Engineering) and `summer-camp-instructor.md` (category
+Education) are already both set to `order: 0`. The template also
+defaults new roles to `order: 0`. If you copy the template for a new
+role and leave `order` at its default, that new role joins the same tie
+— and depending on which category it belongs to, it can change which
+category section appears first on the page, not just where the new role
+sits within its own category.
+
+To avoid this: before saving a new role, look at the `order` values
+already used by roles in its category and pick a value that continues
+that category's own sequence (for example, one higher than the largest
+`order` already used there), rather than leaving the template's default
+of `0` in place. If you want to reorder roles within one category
+without disturbing the others, change their `order` numbers by small
+amounts relative to each other, and check the Contribute page afterward
+to confirm the category sections still appear in the order you expect.
 
 To retire a role that is no longer accepting applicants, **do not delete
 its file.** Instead:
@@ -274,33 +330,21 @@ its file.** Instead:
    history — stays in the repository, ready to be reopened later by
    setting `open` back to `true`.
 
-**A warning about the `order` field.** Every role has an `order` field, a
-whole number that controls its position on the page. Roles are first
-sorted by this number *across every role on the whole site*, and only
-then grouped into their category sections (Engineering, Education, and
-so on) — the category sections themselves appear in whatever order their
-first role lands in after that site-wide sort. In practice, this means
-changing one role's `order` number does not just move that role within
-its own category — a very low or very high number can shift its entire
-category section earlier or later on the page. If you want to reorder
-roles within one category without disturbing the others, change their
-`order` numbers by small amounts relative to each other, and check the
-Contribute page afterward to confirm the category sections still appear
-in the order you expect.
-
 ## Task 9: Replace the sponsor packet PDF
 
-**File:** `public/files/isentropic-sponsor-packet.pdf`
+**Folder:** `public/files/`
 
-1. In `public/files/`, click on `isentropic-sponsor-packet.pdf`.
-2. Click "Add file" in that folder, then "Upload files," and upload the
-   new PDF using the exact same file name,
-   `isentropic-sponsor-packet.pdf`. Uploading a file with the same name
-   replaces the old one.
-3. Save. There is nothing else to update — the "Sponsor packet (PDF, ...
-   KB)" file size shown next to the download link on the Contribute page
-   is calculated automatically from the file itself, so it will reflect
-   the new file's size the next time the site rebuilds.
+1. Go to the `public/files/` folder in the repository — the folder
+   listing, not the PDF file itself.
+2. Click "Add file," then "Upload files," and upload the new PDF using
+   the exact same file name, `isentropic-sponsor-packet.pdf`. GitHub
+   will notice the name matches an existing file and ask you to confirm
+   replacing it.
+3. Commit the change, as described above. There is nothing else to
+   update — the "Sponsor packet (PDF, ... KB)" file size shown next to
+   the download link on the Contribute page is calculated automatically
+   from the file itself, so it will reflect the new file's size the next
+   time the site rebuilds.
 
 ## Task 10: Where form submissions arrive
 

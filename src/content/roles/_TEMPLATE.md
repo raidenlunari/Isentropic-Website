@@ -12,8 +12,14 @@ commitment: "Replace with a commitment description"
 # retire a role without deleting this file; it will stop appearing in
 # listings and the application form's role select.
 open: true
-# Display position within its category, lowest number first. Use whole
-# numbers (0, 1, 2, ...) and keep them unique within the category.
+# Display position, lowest number first. IMPORTANT: this number is
+# sorted across every role in the collection, not just within this
+# category - roles are grouped into their category sections only after
+# that sitewide sort, so a role's order number can shift where its
+# entire category section appears on the page, not just its position
+# inside that category. Use whole numbers (0, 1, 2, ...), keep them
+# unique within the category, and see CONTENT-GUIDE.md ("Task 8: Open
+# and close a volunteer role") before picking one.
 order: 0
 ---
 

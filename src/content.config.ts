@@ -78,9 +78,9 @@ const roles = defineCollection({
     // per-category ordering. Practically: giving one role in a category a
     // very low or very high `order` can move that role's whole category
     // section earlier or later on the Contribute page, not just reorder
-    // that role within its own category. See CONTENT-GUIDE.md ("Opening
-    // and closing a role") for the plain-language version of this
-    // warning.
+    // that role within its own category. See CONTENT-GUIDE.md ("Task 8:
+    // Open and close a volunteer role") for the plain-language version of
+    // this warning.
     order: z.number().int().default(0),
   }),
 });
