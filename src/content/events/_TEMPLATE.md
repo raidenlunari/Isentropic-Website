@@ -11,3 +11,8 @@ summary: "Replace with a one or two sentence summary."
 
 Write the expanded detail here in Markdown: attendance, partner
 organizations, and outcomes. This text appears when a visitor opens the row.
+
+Do not use "##" headings here. The row's own title is not a heading, so a
+heading in this body would have nothing to sit under. Use plain paragraphs,
+or a bold label on its own line with a list beneath it. See CONTENT-GUIDE.md
+("Task 11: Writing inside a post body").

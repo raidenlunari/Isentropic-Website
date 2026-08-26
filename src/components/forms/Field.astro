@@ -2,6 +2,24 @@
 interface Props {
   label: string;
   name: string;
+  // Namespace for every id this field generates. REQUIRED, and required on
+  // purpose: field names are not unique across a page. /contribute renders
+  // two forms that both have an `email` and a `message`, and /research
+  // renders one manuscript form per entry with the manuscript available.
+  // Deriving ids from the field name alone made two controls share
+  // id="field-email", which silently moved one form's <label for> onto the
+  // other form's input and left the second input with no accessible name
+  // at all - a WCAG 1.3.1/4.1.2 failure that axe cannot see (it matches
+  // `for` against `id` as a string without checking id uniqueness, and the
+  // `duplicate-id-active` rule that would have caught it was removed in
+  // axe-core 4.10).
+  //
+  // Because this prop has no default, `astro check` fails the build at any
+  // call site that forgets it, and tests/e2e/forms.spec.ts asserts page-wide
+  // id uniqueness and exactly one `element.labels` entry per control on both
+  // multi-form pages. Pass the Netlify form name (site.formNames.*), plus
+  // the entry slug wherever one form is rendered once per entry.
+  idPrefix: string;
   type?: string;
   required?: boolean;
   // Quoted deliberately: an unquoted `as` key here triggers a false-positive
@@ -20,6 +38,7 @@ interface Props {
 const {
   label,
   name,
+  idPrefix,
   type = "text",
   required = false,
   "as": fieldAs = "input",
@@ -28,9 +47,9 @@ const {
   maxlength,
 } = Astro.props;
 
-const fieldId = `field-${name}`;
-const helpId = help ? `${name}-help` : undefined;
-const errorId = `${name}-error`;
+const fieldId = `field-${idPrefix}-${name}`;
+const helpId = help ? `${idPrefix}-${name}-help` : undefined;
+const errorId = `${idPrefix}-${name}-error`;
 const describedBy = [helpId, errorId].filter(Boolean).join(" ");
 ---
 

@@ -78,17 +78,18 @@ const roleOptions = [
 
   <div class="form-block">
     <NetlifyForm name={site.formNames.sponsor}>
-      <Field label="Organization" name="organization" required />
-      <Field label="Contact name" name="contact-name" required />
-      <Field label="Email" name="email" type="email" required />
+      <Field idPrefix={site.formNames.sponsor} label="Organization" name="organization" required />
+      <Field idPrefix={site.formNames.sponsor} label="Contact name" name="contact-name" required />
+      <Field idPrefix={site.formNames.sponsor} label="Email" name="email" type="email" required />
       <Field
+        idPrefix={site.formNames.sponsor}
         label="Sponsorship level"
         name="sponsorship-level"
         as="select"
         options={SPONSORSHIP_LEVELS}
         required
       />
-      <Field label="Message" name="message" as="textarea" required />
+      <Field idPrefix={site.formNames.sponsor} label="Message" name="message" as="textarea" required />
     </NetlifyForm>
   </div>
 
@@ -122,9 +123,10 @@ const roleOptions = [
   <h3 class="form-heading">Apply</h3>
   <div class="form-block">
     <NetlifyForm name={site.formNames.application} multipart>
-      <Field label="Name" name="name" required />
-      <Field label="Email" name="email" type="email" required />
+      <Field idPrefix={site.formNames.application} label="Name" name="name" required />
+      <Field idPrefix={site.formNames.application} label="Email" name="email" type="email" required />
       <Field
+        idPrefix={site.formNames.application}
         label="Role"
         name="role"
         as="select"
@@ -132,17 +134,19 @@ const roleOptions = [
         required
       />
       <Field
+        idPrefix={site.formNames.application}
         label="Links"
         name="links"
         help="A resume, portfolio, or profile URL, if applicable."
       />
       <Field
+        idPrefix={site.formNames.application}
         label="Resume"
         name="resume"
         type="file"
         help="PDF preferred."
       />
-      <Field label="Message" name="message" as="textarea" required />
+      <Field idPrefix={site.formNames.application} label="Message" name="message" as="textarea" required />
     </NetlifyForm>
   </div>
 </BaseLayout>

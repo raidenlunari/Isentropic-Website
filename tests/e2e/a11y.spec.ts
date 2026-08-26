@@ -77,6 +77,33 @@ test("product entry bodies nest strictly under their entry's h3 title", async ({
   }
 });
 
+// Volunteer roles are the third place an entry's Markdown body is spliced
+// in under an <h3> entry title (contribute.astro renders each role title as
+// an h3). The seeded role bodies use bold labels rather than "##", so this
+// assertion is quiet today - but CONTENT-GUIDE.md Task 11 tells authors to
+// write "## ..." headings, and src/content/roles/ is in the level-shifting
+// plugin's list precisely so that a role author who follows that guidance
+// gets h4s under the h3 rather than h2s over it. This is the assertion that
+// holds that arrangement in place.
+test("role bodies nest strictly under their role's h3 title", async ({ page }) => {
+  await page.goto("/contribute");
+  const entries = await headingLevelsPerEntry(page, ".role");
+  expect(entries.length).toBeGreaterThan(0);
+  for (const levels of entries) {
+    const [titleLevel, ...bodyLevels] = levels;
+    expect(titleLevel).toBe(3);
+    for (const level of bodyLevels) {
+      expect(level).toBeGreaterThan(titleLevel);
+    }
+  }
+});
+
+// Community events are the one many-entries-per-page surface whose bodies
+// are NOT level-shifted: the Disclosure summary that titles each event is a
+// <span>, not a heading, so a shifted body heading would have no ancestor
+// heading to nest under. CONTENT-GUIDE.md Task 11 tells event authors to
+// use bold labels and lists instead of "##" headings, and this assertion is
+// what makes that rule enforceable rather than merely documented.
 test("community events carry no headings (unaffected by the heading-nesting plugin)", async ({ page }) => {
   await page.goto("/community");
   const headingsInEvents = await page.locator(".events h1,.events h2,.events h3,.events h4,.events h5,.events h6").count();

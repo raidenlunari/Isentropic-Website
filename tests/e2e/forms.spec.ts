@@ -24,17 +24,27 @@ test("/thanks renders a single h1 and states what was received and what happens 
   await expect(body).toContainText(/reply by email/i);
 });
 
-test("the manuscript-request form carries the expected Netlify attributes", async ({
+// The count is deliberately not pinned to 1. One manuscript-request form is
+// rendered per research entry with `manuscriptAvailable: true`, and
+// CONTENT-GUIDE.md Task 6 tells maintainers to set that field on any entry
+// whose write-up can be shared. Asserting exactly one form would turn this
+// test red on an ordinary, correct content change; asserting the attributes
+// on every rendered form is what the test is actually for.
+test("every manuscript-request form carries the expected Netlify attributes", async ({
   page,
 }) => {
   await page.goto("/research");
-  const form = page.locator('form[name="manuscript-request"]');
-  await expect(form).toHaveCount(1);
-  await expect(form).toHaveAttribute("data-netlify", "true");
-  await expect(form).toHaveAttribute("method", "POST");
-  await expect(form).toHaveAttribute("netlify-honeypot", "bot-field");
-  const formNameInput = form.locator('input[name="form-name"]');
-  await expect(formNameInput).toHaveAttribute("value", "manuscript-request");
+  const forms = page.locator('form[name="manuscript-request"]');
+  const count = await forms.count();
+  expect(count).toBeGreaterThan(0);
+  for (let i = 0; i < count; i += 1) {
+    const form = forms.nth(i);
+    await expect(form).toHaveAttribute("data-netlify", "true");
+    await expect(form).toHaveAttribute("method", "POST");
+    await expect(form).toHaveAttribute("netlify-honeypot", "bot-field");
+    const formNameInput = form.locator('input[name="form-name"]');
+    await expect(formNameInput).toHaveAttribute("value", "manuscript-request");
+  }
 });
 
 test("every rendered manuscript field has a non-empty, distinct value", async ({
@@ -140,4 +150,111 @@ test.describe("no-JavaScript submission path", () => {
       await context.close();
     }
   });
+});
+
+// ---------------------------------------------------------------------------
+// Structural contracts that no automated sweep covers.
+//
+// axe cannot catch either of the next two: its `label` rule resolves a
+// control's label by *string-matching* `label[for="x"]` against `id="x"`,
+// without checking that the id is unique on the page, so two controls
+// sharing an id both look labelled to it. The rule that would have caught
+// the root cause, `duplicate-id-active`, was removed from axe-core in 4.10
+// (this project runs 4.13). `element.labels` is the DOM's own resolution
+// and follows the same rules a screen reader does, so it is the check that
+// actually bites.
+//
+// Both pages below render more than one form, and the forms share field
+// names (`email`, `message`, `name`), which is exactly the condition that
+// produces colliding ids if ids are derived from the field name alone.
+const MULTI_FORM_ROUTES = ["/contribute", "/research"];
+
+// The duplicate-id sweep runs wider than the form pages. Writing it first
+// showed the same class of bug in a second place: every page that splices
+// several Markdown entry bodies into one page was shipping duplicate
+// heading ids (two research entries both writing "## Results" produced two
+// elements with id="results"). Keeping the whole set of many-entries-per-
+// page routes under this assertion is what stops that recurring.
+const ID_UNIQUENESS_ROUTES = [
+  ...MULTI_FORM_ROUTES,
+  "/",
+  "/community",
+  "/products",
+];
+
+for (const route of ID_UNIQUENESS_ROUTES) {
+  test(`${route} emits no duplicate element ids`, async ({ page }) => {
+    await page.goto(route);
+    const ids = await page.$$eval("[id]", (els) => els.map((el) => el.id));
+    expect(ids.length).toBeGreaterThan(0);
+    const duplicates = [...new Set(ids.filter((id, i) => ids.indexOf(id) !== i))];
+    expect(duplicates, `duplicate ids on ${route}`).toEqual([]);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+}
+
+for (const route of MULTI_FORM_ROUTES) {
+  test(`${route} gives every form control exactly one label`, async ({ page }) => {
+    await page.goto(route);
+    const controls = await page.$$eval(
+      "input:not([type='hidden']), select, textarea",
+      (els) =>
+        els.map((el) => ({
+          form: el.closest("form")?.getAttribute("name") ?? null,
+          name: el.getAttribute("name"),
+          labels:
+            (el as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement)
+              .labels?.length ?? 0,
+        })),
+    );
+    expect(controls.length).toBeGreaterThan(0);
+    const wrong = controls.filter((c) => c.labels !== 1);
+    expect(wrong, `controls not labelled exactly once on ${route}`).toEqual([]);
+  });
+}
+
+// The one coupling in this codebase where a mistake loses production data
+// with no local symptom: `public/__forms.html` is the stub Netlify parses
+// at build time to register each form and its fields. A field name that
+// exists on a real form but not in the stub is silently dropped from real
+// submissions - the site keeps building, every other test keeps passing,
+// and the data is simply gone. This asserts the two sets are identical.
+test("every rendered form's field names match the Netlify detection stub", async ({
+  page,
+}) => {
+  const collect = (page: import("@playwright/test").Page) =>
+    page.$$eval("form[name]", (forms) =>
+      forms.map((form) => ({
+        name: form.getAttribute("name"),
+        fields: Array.from(form.querySelectorAll("[name]"))
+          .map((el) => el.getAttribute("name") as string)
+          // `form-name` is Netlify's own routing input, added by
+          // NetlifyForm at render time and never declared in the stub.
+          .filter((name) => name !== "form-name")
+          .sort(),
+      })),
+    );
+
+  await page.goto("/__forms.html");
+  const stub = new Map(
+    (await collect(page)).map((form) => [form.name, form.fields]),
+  );
+  expect(stub.size).toBe(3);
+
+  let checked = 0;
+  for (const route of MULTI_FORM_ROUTES) {
+    await page.goto(route);
+    for (const form of await collect(page)) {
+      expect(
+        stub.has(form.name),
+        `form "${form.name}" on ${route} is not declared in public/__forms.html`,
+      ).toBe(true);
+      expect(
+        form.fields,
+        `field names for form "${form.name}" on ${route} differ from public/__forms.html`,
+      ).toEqual(stub.get(form.name));
+      checked += 1;
+    }
+  }
+  expect(checked).toBeGreaterThanOrEqual(3);
 });

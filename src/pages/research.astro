@@ -24,6 +24,14 @@ const allPosts = await getCollection("blog");
 const researchUpdates = withYearMarkers(
   sortByDateDesc(filterByTopic(publishedPosts(allPosts), "research")),
 );
+
+// One manuscript-request form is rendered per research entry that has its
+// manuscript available, so every one of them repeats the same field names.
+// The entry slug has to be part of the id namespace, or two entries with
+// manuscripts available would collide on id="field-manuscript-request-name"
+// and strand the second form's inputs without an accessible name.
+const manuscriptIdPrefix = (slug: string) =>
+  `${site.formNames.manuscript}-${slug}`;
 ---
 
 <BaseLayout
@@ -58,10 +66,22 @@ const researchUpdates = withYearMarkers(
               <h4>Request the manuscript</h4>
               <NetlifyForm name={site.formNames.manuscript}>
                 <input type="hidden" name="manuscript" value={item.data.title} />
-                <Field label="Name" name="name" required />
-                <Field label="Email" name="email" type="email" required />
-                <Field label="Affiliation" name="affiliation" required />
+                <Field idPrefix={manuscriptIdPrefix(item.id)} label="Name" name="name" required />
                 <Field
+                  idPrefix={manuscriptIdPrefix(item.id)}
+                  label="Email"
+                  name="email"
+                  type="email"
+                  required
+                />
+                <Field
+                  idPrefix={manuscriptIdPrefix(item.id)}
+                  label="Affiliation"
+                  name="affiliation"
+                  required
+                />
+                <Field
+                  idPrefix={manuscriptIdPrefix(item.id)}
                   label="Intended use"
                   name="intended-use"
                   as="textarea"
