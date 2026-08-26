@@ -7,6 +7,14 @@ interface Props {
 
 const { pathname } = Astro.props;
 
+// Astro's static build fixes each page's Astro.url.pathname at prerender
+// time to the directory-style route it emits (e.g. "/community/"), while
+// our link hrefs are written without a trailing slash. Normalize both
+// sides to the same shape so the comparison holds in dev and in the
+// built/served output alike.
+const normalize = (path: string) => (path !== "/" && path.endsWith("/") ? path.slice(0, -1) : path);
+const currentPath = normalize(pathname);
+
 const links = [
   { href: "/", label: "Home" },
   { href: "/community", label: "Community" },
@@ -22,7 +30,7 @@ const links = [
     {
       links.map((link) => (
         <li>
-          <a href={link.href} aria-current={pathname === link.href ? "page" : undefined}>
+          <a href={link.href} aria-current={currentPath === link.href ? "page" : undefined}>
             {link.label}
           </a>
         </li>

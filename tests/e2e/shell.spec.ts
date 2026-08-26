@@ -4,8 +4,9 @@ const ROUTES = ["/", "/community", "/research", "/products", "/contribute"];
 
 test("skip link reaches main content", async ({ page }) => {
   await page.goto("/");
-  await page.keyboard.press("Tab");
   const skip = page.locator(".skip-link");
+  await expect(skip).toBeAttached();
+  await page.keyboard.press("Tab");
   await expect(skip).toBeFocused();
   await expect(skip).toHaveAttribute("href", "#main");
 });
