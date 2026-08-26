@@ -1,0 +1,33 @@
+---
+---
+<ol class="rail"><slot /></ol>
+
+<style>
+  .rail {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+  /* The constant-interval rule. Inset to sit 40px left of the card edge. */
+  .rail::before {
+    content: "";
+    position: absolute;
+    left: 16px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--border-soft);
+  }
+
+  @media (max-width: 640px) {
+    .rail::before {
+      left: 4px;
+    }
+    /* Reduce the card inset so the layout still fits a 360px viewport,
+       matching the rule/ticks moving to left: 4px. */
+    .rail {
+      --rail-offset: 16px;
+    }
+  }
+</style>

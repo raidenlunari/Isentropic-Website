@@ -1,0 +1,76 @@
+---
+import type { Tier } from "../lib/taxonomy";
+import { tickClass } from "../lib/tiers";
+
+interface Props {
+  tier: Tier | "event";
+  yearMarker: string | null;
+}
+
+const { tier, yearMarker } = Astro.props;
+const tick = tier === "event" ? "tick tick--event" : tickClass(tier);
+---
+<li class="rail-item">
+  {yearMarker && <span class="year">{yearMarker}</span>}
+  <div class:list={["rail-item-body", { "rail-item-body--marked": yearMarker }]}>
+    <span class={tick}></span>
+    <slot />
+  </div>
+</li>
+
+<style>
+  .rail-item {
+    position: relative;
+    /* A hairline of padding stops .rail-item-body's margin-top (below) from
+       collapsing through into the gap above this <li>. Without it, the
+       reserved space for a year marker would escape upward as extra space
+       between entries instead of pushing this entry's tick and card down,
+       and the year label and the tick would land on top of each other. */
+    padding-top: 1px;
+  }
+  .rail-item + .rail-item {
+    margin-top: 16px;
+  }
+  /* Positioning context for the tick, distinct from .rail-item itself so
+     that reserving room for a year marker (via margin-top below) shifts
+     the tick and the card's first baseline together, keeping them aligned. */
+  .rail-item-body {
+    position: relative;
+  }
+  .rail-item-body--marked {
+    margin-top: 32px;
+  }
+
+  .tick { position: absolute; left: 16px; transform: translateX(-50%); top: 11px; }
+  .tick--major {
+    width: var(--tick-size); height: var(--tick-size);
+    background: var(--foreground);
+    outline: 2px solid var(--background);
+  }
+  .tick--progress {
+    width: var(--tick-size); height: var(--tick-size);
+    border: 1px solid var(--foreground); background: var(--background);
+    outline: 2px solid var(--background);
+  }
+  .tick--standard {
+    width: var(--tick-size); height: 1px;
+    background: var(--border-soft-hover);
+  }
+  .tick--event {
+    width: var(--tick-size); height: var(--tick-size);
+    border: 1px solid var(--border-soft-hover); background: var(--background);
+    outline: 2px solid var(--background);
+  }
+  .year {
+    position: absolute; left: 16px; transform: translateX(-50%);
+    background: var(--background); padding: 4px 0;
+    font-size: 12px; color: var(--muted-foreground);
+    writing-mode: horizontal-tb;
+  }
+
+  @media (max-width: 640px) {
+    .tick, .year {
+      left: 4px;
+    }
+  }
+</style>

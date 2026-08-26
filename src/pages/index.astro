@@ -1,8 +1,29 @@
 ---
+import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Rail from "../components/Rail.astro";
+import RailItem from "../components/RailItem.astro";
+import PostCard from "../components/PostCard.astro";
+import { publishedPosts, sortByDateDesc, withYearMarkers } from "../lib/posts";
 import { site } from "../data/site";
+
+const allPosts = await getCollection("blog");
+const entries = withYearMarkers(sortByDateDesc(publishedPosts(allPosts)));
 ---
 
 <BaseLayout title={site.name}>
   <h1>{site.name}</h1>
+  <Rail>
+    {entries.map(({ item, yearMarker }) => (
+      <RailItem tier={item.data.tier} yearMarker={yearMarker}>
+        <PostCard
+          href={`/blog/${item.id}/`}
+          title={item.data.title}
+          date={item.data.date}
+          summary={item.data.summary}
+          tier={item.data.tier}
+        />
+      </RailItem>
+    ))}
+  </Rail>
 </BaseLayout>
