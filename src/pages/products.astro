@@ -39,11 +39,12 @@ const productUpdates = withYearMarkers(
     software; each entry expands to its specifications and related links.
   </p>
 
-  <div class="products">
+  <h2 class="section-heading">Product entries</h2>
+  <ol class="products">
     {products.map(({ item, Content }) => (
-      <div class="product" data-kind={item.data.kind}>
+      <li class="product" data-kind={item.data.kind}>
         <div class="product-header">
-          <h2 class="product-title">{item.data.title}</h2>
+          <h3 class="product-title">{item.data.title}</h3>
           <span class="product-status">{item.data.status}</span>
         </div>
         <p class="product-summary">{item.data.summary}</p>
@@ -59,9 +60,9 @@ const productUpdates = withYearMarkers(
             </ul>
           )}
         </Disclosure>
-      </div>
+      </li>
     ))}
-  </div>
+  </ol>
 
   <h2 class="section-heading">Product updates</h2>
   <div class="updates">
@@ -91,10 +92,12 @@ const productUpdates = withYearMarkers(
   }
 
   .products {
+    list-style: none;
+    margin: 0 0 48px;
+    padding: 0;
     display: flex;
     flex-direction: column;
     gap: 24px;
-    margin: 0 0 48px;
   }
 
   .product {

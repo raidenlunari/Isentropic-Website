@@ -39,11 +39,12 @@ const researchUpdates = withYearMarkers(
     work still in progress.
   </p>
 
+  <h2 class="section-heading">Research entries</h2>
   <ol class="research-list">
     {research.map(({ item, Content }) => (
       <li class="research-entry">
         <div class="entry-header">
-          <h2 class="entry-title">{item.data.title}</h2>
+          <h3 class="entry-title">{item.data.title}</h3>
           <span class="entry-date">{formatDate(item.data.date)}</span>
         </div>
         <p class="entry-authors">{item.data.authors.join(", ")}</p>

@@ -13,7 +13,7 @@ const tick = tier === "event" ? "tick tick--event" : tickClass(tier);
 <li class="rail-item">
   {yearMarker && <span class="year">{yearMarker}</span>}
   <div class:list={["rail-item-body", { "rail-item-body--marked": yearMarker }]}>
-    <span class={tick}></span>
+    <span class={tick} aria-hidden="true"></span>
     <slot />
   </div>
 </li>

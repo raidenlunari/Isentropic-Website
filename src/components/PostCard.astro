@@ -15,7 +15,7 @@ const { href, title, date, summary, tier } = Astro.props;
 ---
 <a href={href} class={tierClass(tier)}>
   <div class="row">
-    <span class="title">{title}</span>
+    <span class="title" title={title}>{title}</span>
     <span class="date">{formatDate(date)}</span>
   </div>
   <p class="summary">{summary}</p>

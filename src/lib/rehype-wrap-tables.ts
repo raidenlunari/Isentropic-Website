@@ -20,7 +20,18 @@ export function rehypeWrapTables() {
       const wrapper: Element = {
         type: "element",
         tagName: "div",
-        properties: { className: ["table-scroll"] },
+        // tabIndex + role/aria-label make the scrollable wrapper itself a
+        // reachable, named landmark: on a narrow viewport it is the thing
+        // that scrolls, so keyboard users need a focus stop to reach it
+        // with arrow keys, and screen reader users need an accessible name
+        // since a bare wrapping <div> has none of its own (axe:
+        // scrollable-region-focusable).
+        properties: {
+          className: ["table-scroll"],
+          tabIndex: 0,
+          role: "region",
+          ariaLabel: "Scrollable table",
+        },
         children: [node],
       };
 
