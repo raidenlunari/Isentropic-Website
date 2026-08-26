@@ -30,6 +30,7 @@ const { summary, meta, open = false } = Astro.props;
     align-items: baseline;
     gap: 8px;
     padding: 8px 12px;
+    font-size: 12px;
     cursor: pointer;
     list-style: none;
   }
@@ -57,7 +58,6 @@ const { summary, meta, open = false } = Astro.props;
   .summary-label {
     flex: 1 1 auto;
     min-width: 0;
-    font-size: 12px;
     font-weight: 600;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -67,7 +67,6 @@ const { summary, meta, open = false } = Astro.props;
   .summary-meta {
     flex-shrink: 0;
     margin-left: auto;
-    font-size: 12px;
     color: var(--muted-foreground);
     white-space: nowrap;
   }
