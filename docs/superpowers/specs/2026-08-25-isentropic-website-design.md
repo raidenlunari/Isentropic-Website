@@ -54,7 +54,16 @@ Two layers, mirroring the reference.
 - Display: **Instrument Serif** 400, self-hosted. Substitutes for Signifier, which is a licensed Klim face and cannot be redistributed. Article `h1` at 60px on desktop, 40px on mobile, `text-wrap: balance`, tight leading.
 - Body: **Source Sans 3** 400/600, self-hosted. 18px / 1.625.
 
-The wordmark "Isentropic Robotics" is set in Instrument Serif at 30px, matching the reference's serif wordmark against monospace navigation.
+### 3.2.1 Wordmark
+
+The wordmark is `Isentropic Robotics (φ)`, set in the display serif at 30px against monospace navigation, mirroring the reference's `Physical Intelligence (π)`.
+
+The glyph is lowercase phi, U+03C6, in its looped form. Two constraints govern the choice of display face:
+
+1. **The face must carry the Greek block.** If it does not, the φ falls back to a system serif and renders at a different stroke contrast and vertical proportion than the surrounding letters, inside the wordmark itself. Glyph coverage is verified before the face is committed; if Instrument Serif lacks Greek, the display face changes to one that has it rather than setting a single glyph in a second serif.
+2. **The rendered form must be the looped φ, not the straight-stroked ϕ (U+03D5).** Some faces map U+03C6 to the straight form. This is checked visually, not assumed from the codepoint.
+
+A fallback rule sets `font-feature-settings` and an explicit fallback stack on the wordmark so the glyph degrades to a known serif rather than to the monospace chrome face.
 
 Both families are self-hosted as WOFF2 with `font-display: swap` and full fallback stacks. No external font requests.
 
