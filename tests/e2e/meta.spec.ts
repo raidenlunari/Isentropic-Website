@@ -1,11 +1,19 @@
 import { test, expect } from "@playwright/test";
+import { draftPosts, publishedPosts, text } from "./content";
 
+// Both the item count and the titles that must be absent derive from the
+// blog files, so publishing a post (Task 1) or starting a new draft
+// (Task 2) does not turn this red for a correct content change.
 test("feed lists published posts and excludes drafts", async ({ request }) => {
   const res = await request.get("/rss.xml");
   expect(res.status()).toBe(200);
   const xml = await res.text();
-  expect((xml.match(/<item>/g) ?? []).length).toBe(8);
-  expect(xml).not.toContain("Fall build season preview");
+  expect((xml.match(/<item>/g) ?? []).length).toBe(publishedPosts().length);
+  const drafts = draftPosts();
+  expect(drafts.length).toBeGreaterThan(0);
+  for (const draft of drafts) {
+    expect(xml).not.toContain(text(draft, "title"));
+  }
   expect(xml).toContain("https://isentropic.tech");
 });
 
@@ -15,7 +23,7 @@ test("feed item links are absolute", async ({ request }) => {
   const links = [...xml.matchAll(/<link>(.*?)<\/link>/g)].map((m) => m[1]);
   // The first <link> is the channel link; the rest belong to items.
   const itemLinks = links.slice(1);
-  expect(itemLinks.length).toBe(8);
+  expect(itemLinks.length).toBe(publishedPosts().length);
   for (const link of itemLinks) {
     expect(link.startsWith("https://isentropic.tech")).toBe(true);
   }

@@ -1,7 +1,5 @@
 import { test, expect } from "@playwright/test";
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { publishedPosts } from "./content";
 
 // Every collection's `_TEMPLATE.md` file is excluded from the built site
 // by the glob pattern in content.config.ts (`"**/[^_]*.md"`), and each
@@ -15,20 +13,6 @@ import { fileURLToPath } from "node:url";
 // text directly, rather than trusting that "the build succeeded" means
 // "no template leaked through".
 
-const CONTENT_ROOT = fileURLToPath(new URL("../../src/content", import.meta.url));
-
-function publishedBlogSlugs(): string[] {
-  const dir = path.join(CONTENT_ROOT, "blog");
-  return fs
-    .readdirSync(dir)
-    .filter((name) => name.endsWith(".md") && !name.startsWith("_"))
-    .filter((name) => {
-      const raw = fs.readFileSync(path.join(dir, name), "utf8");
-      return !/^draft:\s*true\s*$/m.test(raw);
-    })
-    .map((name) => name.replace(/\.md$/, ""));
-}
-
 // Home renders the board collection; community/research/products each
 // render their own collection plus role/event/research/product bodies;
 // contribute renders the roles collection. Between the five page routes
@@ -39,7 +23,7 @@ const ROUTES = [
   "/research",
   "/products",
   "/contribute",
-  ...publishedBlogSlugs().map((slug) => `/blog/${slug}/`),
+  ...publishedPosts().map((post) => `/blog/${post.slug}/`),
 ];
 
 const PLACEHOLDER_PATTERN = /replace with/i;

@@ -14,11 +14,17 @@ interface Props {
   // `duplicate-id-active` rule that would have caught it was removed in
   // axe-core 4.10).
   //
-  // Because this prop has no default, `astro check` fails the build at any
-  // call site that forgets it, and tests/e2e/forms.spec.ts asserts page-wide
-  // id uniqueness and exactly one `element.labels` entry per control on both
-  // multi-form pages. Pass the Netlify form name (site.formNames.*), plus
-  // the entry slug wherever one form is rendered once per entry.
+  // Because this prop has no default, a call site that forgets it is a type
+  // error. Note what does and does not catch that: `npm run build` is plain
+  // `astro build`, which does not typecheck, and netlify.toml runs exactly
+  // that - so a missing prefix would deploy as id="field-undefined-email" on
+  // every form at once. The gate is `npm test`, which runs `astro check`
+  // before anything else, backed by tests/e2e/forms.spec.ts asserting
+  // page-wide id uniqueness and exactly one `element.labels` entry per
+  // control on both multi-form pages. Run it before deploying.
+  //
+  // Pass the Netlify form name (site.formNames.*), plus the entry slug
+  // wherever one form is rendered once per entry.
   idPrefix: string;
   type?: string;
   required?: boolean;

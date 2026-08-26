@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { site } from "../../src/data/site";
 
 // Per-form attribute and behavior tests (honeypot, validation, inline
 // submission, file upload, per-entry manuscript identification) are
@@ -9,7 +10,7 @@ import { test, expect } from "@playwright/test";
 
 test("detection stub declares every form", async ({ page }) => {
   await page.goto("/__forms.html");
-  for (const name of ["sponsor-contact", "manuscript-request", "application"]) {
+  for (const name of Object.values(site.formNames)) {
     await expect(page.locator(`form[name="${name}"]`)).toHaveCount(1);
   }
 });
@@ -239,7 +240,9 @@ test("every rendered form's field names match the Netlify detection stub", async
   const stub = new Map(
     (await collect(page)).map((form) => [form.name, form.fields]),
   );
-  expect(stub.size).toBe(3);
+  // Derived from site.formNames rather than pinned, so adding a fourth
+  // form to the site without declaring it in the stub fails here too.
+  expect(stub.size).toBe(Object.keys(site.formNames).length);
 
   let checked = 0;
   for (const route of MULTI_FORM_ROUTES) {
@@ -256,5 +259,5 @@ test("every rendered form's field names match the Netlify detection stub", async
       checked += 1;
     }
   }
-  expect(checked).toBeGreaterThanOrEqual(3);
+  expect(checked).toBeGreaterThanOrEqual(Object.keys(site.formNames).length);
 });
