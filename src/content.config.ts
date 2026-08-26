@@ -71,6 +71,16 @@ const roles = defineCollection({
     location: z.string().min(1),
     commitment: z.string().min(1),
     open: z.boolean().default(true),
+    // `order` is sorted across every role in the collection first, and
+    // categories are only formed afterward, in the order their first
+    // (lowest-order) role appears in that global sort — see
+    // groupRolesByCategory in src/lib/posts.ts. There is no separate
+    // per-category ordering. Practically: giving one role in a category a
+    // very low or very high `order` can move that role's whole category
+    // section earlier or later on the Contribute page, not just reorder
+    // that role within its own category. See CONTENT-GUIDE.md ("Opening
+    // and closing a role") for the plain-language version of this
+    // warning.
     order: z.number().int().default(0),
   }),
 });

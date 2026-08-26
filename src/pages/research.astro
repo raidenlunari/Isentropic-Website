@@ -10,6 +10,7 @@ import Field from "../components/forms/Field.astro";
 import { filterByTopic, publishedPosts, sortByDateDesc, withYearMarkers } from "../lib/posts";
 import { formatDate } from "../lib/dates";
 import { site } from "../data/site";
+import "../styles/entry-list.css";
 
 const researchEntries = sortByDateDesc(await getCollection("research"));
 const research = await Promise.all(
@@ -102,46 +103,6 @@ const researchUpdates = withYearMarkers(
     color: var(--foreground);
   }
 
-  .research-list {
-    list-style: none;
-    margin: 0 0 48px;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .research-entry {
-    background: var(--card);
-    border: 1px solid var(--border-soft);
-    padding: 20px;
-    transition: border-color var(--transition);
-  }
-  .research-entry:hover {
-    border-color: var(--border-soft-hover);
-  }
-
-  .entry-header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .entry-title {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: 20px;
-    font-weight: 400;
-  }
-
-  .entry-date {
-    font-size: 12px;
-    color: var(--muted-foreground);
-    white-space: nowrap;
-  }
-
   .entry-authors {
     margin: 4px 0 12px;
     font-size: 12px;
@@ -153,19 +114,6 @@ const researchUpdates = withYearMarkers(
     font-size: 14px;
     line-height: 20px;
     max-width: var(--measure-prose);
-  }
-
-  .research-entry :global(details) {
-    margin: 12px 0 0;
-    margin-left: 0;
-    border-top: 1px solid var(--border-soft);
-    padding-top: 4px;
-  }
-  .research-entry :global(summary) {
-    padding: 8px 0;
-  }
-  .research-entry :global(.disclosure-body) {
-    padding: 0 0 4px 20px;
   }
 
   .synopsis {
@@ -183,12 +131,5 @@ const researchUpdates = withYearMarkers(
     margin: 0 0 12px;
     font-size: 14px;
     font-weight: 600;
-  }
-
-  .section-heading {
-    margin: 48px 0 16px;
-    font-family: var(--font-display);
-    font-size: 22px;
-    font-weight: 400;
   }
 </style>

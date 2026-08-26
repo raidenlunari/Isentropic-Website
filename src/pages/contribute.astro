@@ -16,7 +16,18 @@ const SPONSORSHIP_LEVELS = ["Platinum", "Gold", "Silver", "Bronze", "In-kind"];
 // renders as visible characters rather than being parsed as markup.
 const OPEN_ENDED_ROLE = "<insert-role-you-excel-at/>";
 
-const packetStats = fs.statSync("public" + site.sponsorPacket);
+const packetPath = "public" + site.sponsorPacket;
+let packetStats: ReturnType<typeof fs.statSync>;
+try {
+  packetStats = fs.statSync(packetPath);
+} catch (cause) {
+  throw new Error(
+    `Sponsor packet not found at "${packetPath}". Add the PDF there, or ` +
+      `update site.sponsorPacket in src/data/site.ts to point at the ` +
+      `right file.`,
+    { cause },
+  );
+}
 const packetSizeLabel = `${Math.max(1, Math.round(packetStats.size / 1024))} KB`;
 
 const allRoles = await getCollection("roles");

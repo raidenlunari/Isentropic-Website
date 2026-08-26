@@ -23,6 +23,19 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+html {
+  /* Belt-and-suspenders guard against horizontal scroll. Nothing on the
+     site currently needs to escape the viewport width, but prose.css's
+     `.breakout` figure treatment computes its width from `100vw`, which
+     includes the vertical scrollbar's gutter in most browsers - wider
+     than `document.documentElement.clientWidth` whenever a non-overlay
+     scrollbar is present. `clip` (not `hidden`) discards only the visual
+     overflow without turning the page into its own scroll container, so
+     it can't affect vertical scrolling or any measurement that already
+     passes today. */
+  overflow-x: clip;
+}
+
 body {
   margin: 0;
   background: var(--background);

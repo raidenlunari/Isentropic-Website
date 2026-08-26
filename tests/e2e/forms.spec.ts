@@ -105,33 +105,39 @@ test.describe("no-JavaScript submission path", () => {
     browser,
   }) => {
     const context = await browser.newContext({ javaScriptEnabled: false });
-    const page = await context.newPage();
-    await page.goto("/contribute");
-    const form = page.locator('form[name="sponsor-contact"]');
-    await form.locator('input[name="organization"]').fill("Acme Robotics");
-    await form.locator('input[name="contact-name"]').fill("Jordan Lee");
-    await form.locator('input[name="email"]').fill("jordan@example.com");
-    await form.locator('select[name="sponsorship-level"]').selectOption("Gold");
-    await form.locator('textarea[name="message"]').fill("Interested in sponsoring.");
-    await form.locator('button[type="submit"]').click();
-    await page.waitForURL("**/thanks");
-    expect(new URL(page.url()).pathname).toBe("/thanks");
-    await context.close();
+    try {
+      const page = await context.newPage();
+      await page.goto("/contribute");
+      const form = page.locator('form[name="sponsor-contact"]');
+      await form.locator('input[name="organization"]').fill("Acme Robotics");
+      await form.locator('input[name="contact-name"]').fill("Jordan Lee");
+      await form.locator('input[name="email"]').fill("jordan@example.com");
+      await form.locator('select[name="sponsorship-level"]').selectOption("Gold");
+      await form.locator('textarea[name="message"]').fill("Interested in sponsoring.");
+      await form.locator('button[type="submit"]').click();
+      await page.waitForURL("**/thanks");
+      expect(new URL(page.url()).pathname).toBe("/thanks");
+    } finally {
+      await context.close();
+    }
   });
 
   test("leaving a required field empty blocks submission natively", async ({ browser }) => {
     const context = await browser.newContext({ javaScriptEnabled: false });
-    const page = await context.newPage();
-    await page.goto("/contribute");
-    const form = page.locator('form[name="sponsor-contact"]');
-    // "organization" is left empty; every other required field is filled.
-    await form.locator('input[name="contact-name"]').fill("Jordan Lee");
-    await form.locator('input[name="email"]').fill("jordan@example.com");
-    await form.locator('select[name="sponsorship-level"]').selectOption("Gold");
-    await form.locator('textarea[name="message"]').fill("Interested in sponsoring.");
-    await form.locator('button[type="submit"]').click();
-    await page.waitForTimeout(300);
-    expect(new URL(page.url()).pathname).toBe("/contribute");
-    await context.close();
+    try {
+      const page = await context.newPage();
+      await page.goto("/contribute");
+      const form = page.locator('form[name="sponsor-contact"]');
+      // "organization" is left empty; every other required field is filled.
+      await form.locator('input[name="contact-name"]').fill("Jordan Lee");
+      await form.locator('input[name="email"]').fill("jordan@example.com");
+      await form.locator('select[name="sponsorship-level"]').selectOption("Gold");
+      await form.locator('textarea[name="message"]').fill("Interested in sponsoring.");
+      await form.locator('button[type="submit"]').click();
+      await page.waitForTimeout(300);
+      expect(new URL(page.url()).pathname).toBe("/contribute");
+    } finally {
+      await context.close();
+    }
   });
 });

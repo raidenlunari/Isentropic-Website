@@ -137,8 +137,13 @@
 /* Lets a figure read wider than the 768px text column, up to 1024px,
    while staying centered on the same axis as the rest of the prose. The
    width is clamped against the viewport (minus the page's own side
-   padding) so the breakout can never force horizontal page overflow on a
-   narrow screen - it simply shrinks back down to the column's own width. */
+   padding) so the breakout shrinks back down to the column's own width on
+   a narrow screen instead of forcing it wider. Note that `100vw` itself
+   can still exceed `document.documentElement.clientWidth` by the width of
+   a non-overlay scrollbar; `overflow-x: clip` on `html` (tokens.css) is
+   what actually prevents that from producing a horizontal scrollbar, not
+   this calculation alone. No content uses `figure.breakout` yet, so this
+   is currently dormant. */
 .prose figure.breakout {
   width: min(1024px, calc(100vw - 2 * var(--pad-x)));
   max-width: 1024px;

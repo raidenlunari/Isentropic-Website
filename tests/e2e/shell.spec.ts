@@ -23,6 +23,15 @@ test("current page is marked in the navigation", async ({ page }) => {
   await expect(page.locator('nav a[aria-current="page"]')).toHaveText("Community");
 });
 
+// Nav.astro's normalize() strips a trailing slash from every path except
+// "/" itself (stripping it there would leave an empty string, which would
+// never equal the "/" href). That root-path branch has its own guard
+// clause and is not exercised by any other route in this file.
+test("home is marked in the navigation at the root path", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator('nav a[aria-current="page"]')).toHaveText("Home");
+});
+
 test("no horizontal scroll at 360px", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   for (const route of ROUTES) {
