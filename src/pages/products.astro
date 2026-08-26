@@ -1,0 +1,110 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Rail from "../components/Rail.astro";
+import RailItem from "../components/RailItem.astro";
+import Disclosure from "../components/Disclosure.astro";
+import PostCard from "../components/PostCard.astro";
+import {
+  filterByTopic,
+  publishedPosts,
+  sortByDateDesc,
+  sortByKind,
+  withYearMarkers,
+} from "../lib/posts";
+import "../styles/entry-list.css";
+
+const productEntries = sortByKind(await getCollection("products"));
+const products = await Promise.all(
+  productEntries.map(async (item) => {
+    const { Content } = await render(item);
+    return { item, Content };
+  }),
+);
+
+const allPosts = await getCollection("blog");
+const productUpdates = withYearMarkers(
+  sortByDateDesc(filterByTopic(publishedPosts(allPosts), "product")),
+);
+---
+
+<BaseLayout
+  title="Products"
+  description="Hardware and software products that teams across the network build on directly, with specifications and related links for each."
+>
+  <h1>Products</h1>
+  <p class="intro">
+    The organization maintains a small set of hardware and software
+    products that teams across the network build on directly, rather than
+    reinventing independently. Hardware is listed first, followed by
+    software; each entry expands to its specifications and related links.
+  </p>
+
+  <h2 class="section-heading">Product entries</h2>
+  <ol class="products">
+    {products.map(({ item, Content }) => (
+      <li class="product" data-kind={item.data.kind}>
+        <div class="product-header">
+          <h3 class="product-title">{item.data.title}</h3>
+          <span class="product-status">{item.data.status}</span>
+        </div>
+        <p class="product-summary">{item.data.summary}</p>
+        <Disclosure summary="Specifications and links">
+          <Content />
+          {item.data.links.length > 0 && (
+            <ul class="product-links">
+              {item.data.links.map((link) => (
+                <li>
+                  <a href={link.url}>{link.label}</a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Disclosure>
+      </li>
+    ))}
+  </ol>
+
+  <h2 class="section-heading">Product updates</h2>
+  <div class="updates">
+    <Rail>
+      {productUpdates.map(({ item, yearMarker }) => (
+        <RailItem tier={item.data.tier} yearMarker={yearMarker}>
+          <PostCard
+            href={`/blog/${item.id}/`}
+            title={item.data.title}
+            date={item.data.date}
+            summary={item.data.summary}
+            tier={item.data.tier}
+          />
+        </RailItem>
+      ))}
+    </Rail>
+  </div>
+</BaseLayout>
+
+<style>
+  .intro {
+    max-width: var(--measure-prose);
+    margin: 0 0 40px;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--foreground);
+  }
+
+  .product-summary {
+    margin: 4px 0 0;
+    font-size: 14px;
+    line-height: 20px;
+    max-width: var(--measure-prose);
+  }
+
+  .product-links {
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+</style>

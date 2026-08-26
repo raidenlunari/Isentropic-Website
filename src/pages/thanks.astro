@@ -1,0 +1,22 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Submission received"
+  description="Confirmation that a form submission to Isentropic Robotics has been received."
+>
+  <h1>Submission received</h1>
+  <p class="body-text">
+    Your submission has been received. Isentropic Robotics will reply by email.
+  </p>
+  <p class="body-text"><a href="/">Return to the homepage</a></p>
+</BaseLayout>
+
+<style>
+  .body-text {
+    max-width: var(--measure-prose);
+    font-size: 14px;
+    line-height: 20px;
+  }
+</style>

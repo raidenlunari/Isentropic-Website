@@ -1,0 +1,100 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import BoardCard from "../components/BoardCard.astro";
+import Rail from "../components/Rail.astro";
+import RailItem from "../components/RailItem.astro";
+import PostCard from "../components/PostCard.astro";
+import { site } from "../data/site";
+import { publishedPosts, sortByDateDesc, withYearMarkers } from "../lib/posts";
+
+const boardEntries = (await getCollection("board")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const board = await Promise.all(
+  boardEntries.map(async (member) => {
+    const { Content } = await render(member);
+    return { data: member.data, Content };
+  }),
+);
+
+const posts = withYearMarkers(
+  sortByDateDesc(publishedPosts(await getCollection("blog"))),
+);
+---
+
+<BaseLayout title={site.name} description={site.description}>
+  <h1 class="sr-only">{site.name}</h1>
+  <p class="intro">{site.description}</p>
+
+  <h2>Board</h2>
+  <ul class="board-grid">
+    {board.map(({ data, Content }) => (
+      <li>
+        <BoardCard {...data}>
+          <Content />
+        </BoardCard>
+      </li>
+    ))}
+  </ul>
+
+  <h2>Updates</h2>
+  <Rail>
+    {posts.map(({ item, yearMarker }) => (
+      <RailItem tier={item.data.tier} yearMarker={yearMarker}>
+        <PostCard
+          href={`/blog/${item.id}/`}
+          title={item.data.title}
+          date={item.data.date}
+          summary={item.data.summary}
+          tier={item.data.tier}
+        />
+      </RailItem>
+    ))}
+  </Rail>
+</BaseLayout>
+
+<style>
+  .intro {
+    max-width: var(--measure-prose);
+    margin: 0 0 40px;
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  h2 {
+    margin: 0 0 16px;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 400;
+  }
+
+  .board-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 0 0 48px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .board-grid li {
+    display: flex;
+  }
+
+  .board-grid :global(.board-card) {
+    width: 100%;
+  }
+
+  @media (max-width: 1024px) {
+    .board-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .board-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

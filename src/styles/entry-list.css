@@ -1,0 +1,81 @@
+/* Shared styling for the Research and Products pages' entry lists.
+   research.astro's ".research-entry" cards and products.astro's
+   ".product" cards render the same shape - an ordered list of cards,
+   each with a title/date header and a Disclosure body - so the rules are
+   kept here once instead of duplicated in each page's own <style> block.
+   Selectors are paired (one per page) rather than renamed, so each page
+   keeps its own class names and neither page's tests need to change. */
+
+.research-list,
+.products {
+  list-style: none;
+  margin: 0 0 48px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.research-entry,
+.product {
+  background: var(--card);
+  border: 1px solid var(--border-soft);
+  padding: 20px;
+  transition: border-color var(--transition);
+}
+.research-entry:hover,
+.product:hover {
+  border-color: var(--border-soft-hover);
+}
+
+.entry-header,
+.product-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.entry-title,
+.product-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.entry-date,
+.product-status {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
+/* Overrides the Disclosure component's default look for a <details>
+   nested inside one of these cards. This file is a plain, unscoped
+   stylesheet, so - unlike the :global() escape hatch these two pages
+   used to need in their own Astro <style> blocks - no special syntax is
+   required to reach into the Disclosure component's markup. */
+.research-entry details,
+.product details {
+  margin: 12px 0 0;
+  margin-left: 0;
+  border-top: 1px solid var(--border-soft);
+  padding-top: 4px;
+}
+.research-entry summary,
+.product summary {
+  padding: 8px 0;
+}
+.research-entry .disclosure-body,
+.product .disclosure-body {
+  padding: 0 0 4px 20px;
+}
+
+.section-heading {
+  margin: 48px 0 16px;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+}

@@ -1,0 +1,61 @@
+---
+import "@fontsource-variable/eb-garamond";
+import "@fontsource-variable/source-sans-3";
+import "../styles/tokens.css";
+import { site } from "../data/site";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = site.description } = Astro.props;
+
+const pageTitle = title === site.name ? title : `${title} | ${site.name}`;
+const siteURL = Astro.site ?? new URL("https://isentropic.tech");
+const canonicalURL = new URL(Astro.url.pathname, siteURL);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL.href} />
+    <link rel="alternate" type="application/rss+xml" title={site.name} href="/rss.xml" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL.href} />
+    <meta property="og:site_name" content={site.name} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header>
+      <Nav pathname={Astro.url.pathname} />
+    </header>
+    <main id="main">
+      <div class="container">
+        <slot />
+      </div>
+    </main>
+    <Footer />
+    <script>
+      import { enhanceForms } from "../scripts/forms";
+      enhanceForms();
+    </script>
+  </body>
+</html>
+
+<style>
+  .container {
+    max-width: var(--measure-index);
+    margin: 0 auto;
+    padding: 32px var(--pad-x);
+  }
+</style>

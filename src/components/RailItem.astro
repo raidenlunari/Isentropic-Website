@@ -1,0 +1,102 @@
+---
+import type { Tier } from "../lib/taxonomy";
+import { tickClass } from "../lib/tiers";
+
+interface Props {
+  tier: Tier | "event";
+  yearMarker: string | null;
+}
+
+const { tier, yearMarker } = Astro.props;
+const tick = tier === "event" ? "tick tick--event" : tickClass(tier);
+---
+<li class="rail-item">
+  {yearMarker && <span class="year">{yearMarker}</span>}
+  <div class:list={["rail-item-body", { "rail-item-body--marked": yearMarker }]}>
+    <span class={tick} aria-hidden="true"></span>
+    <slot />
+  </div>
+</li>
+
+<style>
+  .rail-item {
+    position: relative;
+    /* A hairline of padding stops .rail-item-body's margin-top (below) from
+       collapsing through into the gap above this <li>. Without it, the
+       reserved space for a year marker would escape upward as extra space
+       between entries instead of pushing this entry's tick and card down,
+       and the year label and the tick would land on top of each other. */
+    padding-top: 1px;
+  }
+  .rail-item + .rail-item {
+    margin-top: 16px;
+  }
+  /* Positioning context for the tick, distinct from .rail-item itself so
+     that reserving room for a year marker (via margin-top below) shifts
+     the tick and the card's first baseline together, keeping them aligned. */
+  .rail-item-body {
+    position: relative;
+  }
+  .rail-item-body--marked {
+    /* Fallback for browsers that don't parse the lh unit (pre-16.4 Safari,
+       pre-129 Firefox, pre-108 Chrome/Edge, plus assorted older/locked-down
+       mobile browsers - real traffic for a public nonprofit site, not just
+       developers on current browsers). Without this, a browser that can't
+       parse the @supports-gated calc() below would otherwise get no
+       margin-top at all (it isn't inherited, so the computed value falls
+       to 0) and the year label would land back on top of the tick - the
+       exact overlap finding 1's regression test exists to guard against.
+       This MUST stay a separate rule gated by @supports, not two
+       margin-top declarations in one rule: the build's CSS minifier
+       collapses same-rule duplicate declarations for the same property
+       down to the last one - confirmed by inspecting dist/index.html - so
+       the "declare twice, cascade picks the last valid one" trick silently
+       loses the fallback at build time. @supports keeps both rules as
+       genuinely separate blocks the minifier has no basis to merge. */
+    margin-top: 32px;
+  }
+  @supports (margin-top: 1lh) {
+    /* Derived, not a magic number: 1lh is this element's inherited
+       line-height (20px today, from body in tokens.css), which .year also
+       inherits since neither .rail-item nor .rail-item-body overrides it;
+       +8px matches .year's own `padding: 4px 0` (top+bottom); +4px is a
+       deliberate breathing gap. Revisit this alongside body's line-height
+       or .year's padding if either changes. */
+    .rail-item-body--marked {
+      margin-top: calc(1lh + 8px + 4px);
+    }
+  }
+
+  .tick { position: absolute; left: 16px; transform: translateX(-50%); top: 11px; }
+  .tick--major {
+    width: var(--tick-size); height: var(--tick-size);
+    background: var(--foreground);
+    outline: 2px solid var(--background);
+  }
+  .tick--progress {
+    width: var(--tick-size); height: var(--tick-size);
+    border: 1px solid var(--foreground); background: var(--background);
+    outline: 2px solid var(--background);
+  }
+  .tick--standard {
+    width: var(--tick-size); height: 1px;
+    background: var(--border-soft-hover);
+  }
+  .tick--event {
+    width: var(--tick-size); height: var(--tick-size);
+    border: 1px solid var(--border-soft-hover); background: var(--background);
+    outline: 2px solid var(--background);
+  }
+  .year {
+    position: absolute; left: 16px; transform: translateX(-50%);
+    background: var(--background); padding: 4px 0;
+    font-size: 12px; color: var(--muted-foreground);
+    writing-mode: horizontal-tb;
+  }
+
+  @media (max-width: 640px) {
+    .tick, .year {
+      left: 4px;
+    }
+  }
+</style>

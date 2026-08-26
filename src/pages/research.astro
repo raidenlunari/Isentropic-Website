@@ -1,0 +1,135 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Rail from "../components/Rail.astro";
+import RailItem from "../components/RailItem.astro";
+import Disclosure from "../components/Disclosure.astro";
+import PostCard from "../components/PostCard.astro";
+import NetlifyForm from "../components/forms/NetlifyForm.astro";
+import Field from "../components/forms/Field.astro";
+import { filterByTopic, publishedPosts, sortByDateDesc, withYearMarkers } from "../lib/posts";
+import { formatDate } from "../lib/dates";
+import { site } from "../data/site";
+import "../styles/entry-list.css";
+
+const researchEntries = sortByDateDesc(await getCollection("research"));
+const research = await Promise.all(
+  researchEntries.map(async (item) => {
+    const { Content } = await render(item);
+    return { item, Content };
+  }),
+);
+
+const allPosts = await getCollection("blog");
+const researchUpdates = withYearMarkers(
+  sortByDateDesc(filterByTopic(publishedPosts(allPosts), "research")),
+);
+---
+
+<BaseLayout
+  title="Research"
+  description="Formal write-ups and progress updates from the research group's work on localization, perception, and match-scoring analysis, shared for reuse across the team network."
+>
+  <h1>Research</h1>
+  <p class="intro">
+    The research group studies the hardware and software problems that
+    recur across teams in the network — localization, perception, and
+    match-scoring analysis among them — and publishes its methods and
+    results so any team can evaluate or reuse the work. Entries below
+    list the group's formal write-ups; the updates that follow report on
+    work still in progress.
+  </p>
+
+  <h2 class="section-heading">Research entries</h2>
+  <ol class="research-list">
+    {research.map(({ item, Content }) => (
+      <li class="research-entry">
+        <div class="entry-header">
+          <h3 class="entry-title">{item.data.title}</h3>
+          <span class="entry-date">{formatDate(item.data.date)}</span>
+        </div>
+        <p class="entry-authors">{item.data.authors.join(", ")}</p>
+        <p class="entry-abstract">{item.data.abstract}</p>
+        <Disclosure summary="Synopsis, methods, and results">
+          <p class="synopsis">{item.data.synopsis}</p>
+          <Content />
+          {item.data.manuscriptAvailable && (
+            <div class="manuscript-request">
+              <h4>Request the manuscript</h4>
+              <NetlifyForm name={site.formNames.manuscript}>
+                <input type="hidden" name="manuscript" value={item.data.title} />
+                <Field label="Name" name="name" required />
+                <Field label="Email" name="email" type="email" required />
+                <Field label="Affiliation" name="affiliation" required />
+                <Field
+                  label="Intended use"
+                  name="intended-use"
+                  as="textarea"
+                  required
+                  help="A brief note on how the manuscript will be used."
+                />
+              </NetlifyForm>
+            </div>
+          )}
+        </Disclosure>
+      </li>
+    ))}
+  </ol>
+
+  <h2 class="section-heading">Research updates</h2>
+  <div class="updates">
+    <Rail>
+      {researchUpdates.map(({ item, yearMarker }) => (
+        <RailItem tier={item.data.tier} yearMarker={yearMarker}>
+          <PostCard
+            href={`/blog/${item.id}/`}
+            title={item.data.title}
+            date={item.data.date}
+            summary={item.data.summary}
+            tier={item.data.tier}
+          />
+        </RailItem>
+      ))}
+    </Rail>
+  </div>
+</BaseLayout>
+
+<style>
+  .intro {
+    max-width: var(--measure-prose);
+    margin: 0 0 40px;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--foreground);
+  }
+
+  .entry-authors {
+    margin: 4px 0 12px;
+    font-size: 12px;
+    color: var(--muted-foreground);
+  }
+
+  .entry-abstract {
+    margin: 0;
+    font-size: 14px;
+    line-height: 20px;
+    max-width: var(--measure-prose);
+  }
+
+  .synopsis {
+    margin: 0 0 12px;
+    font-style: italic;
+    color: var(--muted-foreground);
+  }
+
+  .manuscript-request {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-soft);
+  }
+  .manuscript-request h4 {
+    margin: 0 0 12px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+</style>

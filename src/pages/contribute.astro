@@ -1,0 +1,235 @@
+---
+import fs from "node:fs";
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Disclosure from "../components/Disclosure.astro";
+import NetlifyForm from "../components/forms/NetlifyForm.astro";
+import Field from "../components/forms/Field.astro";
+import { openRoles, groupRolesByCategory } from "../lib/posts";
+import { site } from "../data/site";
+
+const SPONSORSHIP_LEVELS = ["Platinum", "Gold", "Silver", "Bronze", "In-kind"];
+
+// The open-ended catch-all option applicants use when none of the listed
+// roles fit. The literal angle brackets are intentional — Astro escapes
+// them automatically wherever this string is interpolated as text, so it
+// renders as visible characters rather than being parsed as markup.
+const OPEN_ENDED_ROLE = "<insert-role-you-excel-at/>";
+
+const packetPath = "public" + site.sponsorPacket;
+let packetStats: ReturnType<typeof fs.statSync>;
+try {
+  packetStats = fs.statSync(packetPath);
+} catch (cause) {
+  throw new Error(
+    `Sponsor packet not found at "${packetPath}". Add the PDF there, or ` +
+      `update site.sponsorPacket in src/data/site.ts to point at the ` +
+      `right file.`,
+    { cause },
+  );
+}
+const packetSizeLabel = `${Math.max(1, Math.round(packetStats.size / 1024))} KB`;
+
+const allRoles = await getCollection("roles");
+const open = openRoles(allRoles);
+const roleGroups = await Promise.all(
+  groupRolesByCategory(open).map(async (group) => ({
+    category: group.category,
+    roles: await Promise.all(
+      group.roles.map(async (item) => {
+        const { Content } = await render(item);
+        return { item, Content };
+      }),
+    ),
+  })),
+);
+const roleOptions = [
+  ...roleGroups.flatMap((group) => group.roles.map(({ item }) => item.data.title)),
+  OPEN_ENDED_ROLE,
+];
+---
+
+<BaseLayout
+  title="Contribute"
+  description="How to sponsor Isentropic Robotics or volunteer with its mentoring, instruction, and outreach programs."
+>
+  <h1>Contribute</h1>
+  <p class="intro">
+    Isentropic Robotics relies on sponsorship and volunteer time in roughly
+    equal measure: sponsorship funds materials, competition fees, and
+    travel, while volunteers run the mentoring, instruction, and outreach
+    that make up the organization's programs. Both are described below.
+  </p>
+
+  <h2 class="section-heading">Sponsor</h2>
+  <p class="section-intro">
+    Sponsorship is organized into a small set of tiers, each carrying
+    different recognition and involvement in the organization's events.
+    The packet linked below describes each tier's benefits along with the
+    program's budget and history. Organizations interested in a
+    custom or in-kind arrangement are welcome to describe it in the
+    message field of the form.
+  </p>
+  <p class="packet-link">
+    <a class="packet" href={site.sponsorPacket}>
+      Sponsor packet (PDF, {packetSizeLabel})
+    </a>
+  </p>
+
+  <div class="form-block">
+    <NetlifyForm name={site.formNames.sponsor}>
+      <Field label="Organization" name="organization" required />
+      <Field label="Contact name" name="contact-name" required />
+      <Field label="Email" name="email" type="email" required />
+      <Field
+        label="Sponsorship level"
+        name="sponsorship-level"
+        as="select"
+        options={SPONSORSHIP_LEVELS}
+        required
+      />
+      <Field label="Message" name="message" as="textarea" required />
+    </NetlifyForm>
+  </div>
+
+  <h2 class="section-heading">Join us</h2>
+  <p class="section-intro">
+    Open volunteer roles are grouped by area below. Each listing gives the
+    role's location and expected time commitment along with its
+    responsibilities and qualifications.
+  </p>
+
+  <div class="role-groups">
+    {roleGroups.map(({ category, roles }) => (
+      <Disclosure summary={category} meta={`${roles.length} open`}>
+        <ul class="role-list">
+          {roles.map(({ item, Content }) => (
+            <li class="role">
+              <h3 class="role-title">{item.data.title}</h3>
+              <p class="role-meta">
+                {item.data.location} · {item.data.commitment}
+              </p>
+              <div class="role-body">
+                <Content />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </Disclosure>
+    ))}
+  </div>
+
+  <h3 class="form-heading">Apply</h3>
+  <div class="form-block">
+    <NetlifyForm name={site.formNames.application} multipart>
+      <Field label="Name" name="name" required />
+      <Field label="Email" name="email" type="email" required />
+      <Field
+        label="Role"
+        name="role"
+        as="select"
+        options={roleOptions}
+        required
+      />
+      <Field
+        label="Links"
+        name="links"
+        help="A resume, portfolio, or profile URL, if applicable."
+      />
+      <Field
+        label="Resume"
+        name="resume"
+        type="file"
+        help="PDF preferred."
+      />
+      <Field label="Message" name="message" as="textarea" required />
+    </NetlifyForm>
+  </div>
+</BaseLayout>
+
+<style>
+  .intro,
+  .section-intro {
+    max-width: var(--measure-prose);
+    margin: 0 0 24px;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--foreground);
+  }
+
+  .section-intro {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .section-heading {
+    margin: 48px 0 16px;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 400;
+  }
+  .section-heading:first-of-type {
+    margin-top: 40px;
+  }
+
+  .packet-link {
+    margin: 0 0 32px;
+    font-size: 14px;
+  }
+
+  .form-block {
+    max-width: var(--measure-prose);
+    margin: 0 0 24px;
+  }
+
+  .form-heading {
+    margin: 32px 0 16px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .role-groups {
+    margin: 0 0 8px;
+  }
+
+  .role-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .role {
+    padding-top: 4px;
+  }
+
+  .role-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .role-meta {
+    margin: 4px 0 8px;
+    font-size: 12px;
+    color: var(--muted-foreground);
+  }
+
+  .role-body {
+    font-size: 13px;
+    line-height: 20px;
+    max-width: var(--measure-prose);
+  }
+  .role-body :global(p) {
+    margin: 0 0 8px;
+  }
+  .role-body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+  .role-body :global(ul) {
+    margin: 0 0 8px;
+    padding-left: 20px;
+  }
+</style>

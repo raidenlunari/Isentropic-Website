@@ -1,0 +1,47 @@
+import { visit } from "unist-util-visit";
+import type { Element, Root } from "hast";
+
+// Astro's Markdown pipeline emits a bare <table> for every Markdown table.
+// Wrapping the *table itself* in overflow-x: auto (as prose.css originally
+// did, via `display: block` on the table) strips its computed display away
+// from `table`, which makes browsers drop the implicit table/row/cell
+// accessibility roles - a real regression for screen reader users, who
+// lose row/column navigation and header association entirely.
+//
+// The fix is a small rehype plugin: wrap every <table> in a
+// <div class="table-scroll"> so the *wrapper* handles the horizontal
+// scrolling and the table itself keeps `display: table` (and therefore its
+// accessibility semantics) untouched.
+export function rehypeWrapTables() {
+  return (tree: Root) => {
+    visit(tree, "element", (node, index, parent) => {
+      if (node.tagName !== "table" || parent === undefined || index === undefined) return;
+
+      const wrapper: Element = {
+        type: "element",
+        tagName: "div",
+        // tabIndex + role/aria-label make the scrollable wrapper itself a
+        // reachable, named landmark: on a narrow viewport it is the thing
+        // that scrolls, so keyboard users need a focus stop to reach it
+        // with arrow keys, and screen reader users need an accessible name
+        // since a bare wrapping <div> has none of its own (axe:
+        // scrollable-region-focusable).
+        properties: {
+          className: ["table-scroll"],
+          tabIndex: 0,
+          role: "region",
+          // Fixed rather than caption-derived: GFM Markdown tables (this
+          // pipeline's only source of <table>) have no caption syntax, so
+          // there is no real caption to read here - inferring a label from
+          // the nearest heading would be a guess, not a derivation, and
+          // could misattribute on a section with more than one table.
+          // Harmless while no page has two tables; revisit if one ever does.
+          ariaLabel: "Scrollable table",
+        },
+        children: [node],
+      };
+
+      parent.children[index] = wrapper;
+    });
+  };
+}

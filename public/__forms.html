@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Form detection</title>
+  </head>
+  <body>
+    <!--
+      Never linked from the site. Netlify parses deployed HTML at build
+      time to register forms and their fields. The manuscript-request
+      form is instantiated once per research entry at runtime, so no
+      single rendered page is guaranteed to contain every field Netlify
+      needs to see; this stub declares all three forms, with every field
+      name, so registration does not depend on which pages happen to be
+      built.
+
+      Field names below must match the real forms exactly. A name that
+      exists on a real form but not here is silently dropped from
+      submissions.
+    -->
+    <form name="sponsor-contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input name="bot-field" />
+      <input name="organization" />
+      <input name="contact-name" />
+      <input type="email" name="email" />
+      <input name="sponsorship-level" />
+      <textarea name="message"></textarea>
+    </form>
+    <form name="manuscript-request" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input name="bot-field" />
+      <input name="manuscript" />
+      <input name="name" />
+      <input type="email" name="email" />
+      <input name="affiliation" />
+      <textarea name="intended-use"></textarea>
+    </form>
+    <form
+      name="application"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      enctype="multipart/form-data"
+      hidden
+    >
+      <input name="bot-field" />
+      <input name="name" />
+      <input type="email" name="email" />
+      <input name="role" />
+      <input name="links" />
+      <input type="file" name="resume" />
+      <textarea name="message"></textarea>
+    </form>
+  </body>
+</html>

@@ -1,0 +1,88 @@
+:root {
+  --background: #F5F4EF;
+  --background-hover: #EBEAE5;
+  --foreground: #000000;
+  --muted-foreground: #686868;
+  --card: #FFFFFF;
+  --card-soft: rgba(255, 255, 255, 0.6);
+  --border-soft: #D4D3CB;
+  --border-soft-hover: #C0BDAD;
+
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  --font-display: "EB Garamond Variable", "EB Garamond", Georgia, serif;
+  --font-body: "Source Sans 3 Variable", "Source Sans 3", system-ui, sans-serif;
+
+  --measure-index: 1120px;
+  --measure-prose: 768px;
+  --pad-x: 24px;
+  --rail-offset: 24px;
+  --tick-size: 7px;
+  --transition: 150ms;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  /* Belt-and-suspenders guard against horizontal scroll. Nothing on the
+     site currently needs to escape the viewport width, but prose.css's
+     `.breakout` figure treatment computes its width from `100vw`, which
+     includes the vertical scrollbar's gutter in most browsers - wider
+     than `document.documentElement.clientWidth` whenever a non-overlay
+     scrollbar is present. `clip` (not `hidden`) discards only the visual
+     overflow without turning the page into its own scroll container, so
+     it can't affect vertical scrolling or any measurement that already
+     passes today. */
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 20px;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+.skip-link:focus {
+  left: var(--pad-x);
+  top: 8px;
+  z-index: 10;
+  background: var(--card);
+  border: 1px solid var(--foreground);
+  padding: 8px 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
