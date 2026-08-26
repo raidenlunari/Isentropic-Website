@@ -35,12 +35,26 @@ const { name, action = "/thanks", multipart = false } = Astro.props;
     max-width: var(--measure-prose);
   }
 
-  /* Visually hidden but present in the DOM and tab order of assistive
-     tech that ignores CSS. `display: none` would remove it from the
-     accessibility tree entirely and defeat the honeypot. */
+  /* Visually hidden but present in the DOM (and reachable by bots) —
+     `display: none` would remove it from the accessibility tree entirely
+     and defeat the honeypot. This uses the clip-based hidden pattern
+     rather than a large negative offset (e.g. `left: -9999px`): an
+     absolutely positioned element thousands of pixels outside its
+     containing block can expand the document's horizontal scrollable
+     area, which would violate the no-horizontal-overflow-at-360px
+     constraint. Collapsing the box to 1x1px and clipping it keeps it
+     effectively in-flow so it cannot do that, while remaining just as
+     invisible to sighted users and just as present for bots. */
   .hp {
     position: absolute;
-    left: -9999px;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 
   .form-status {

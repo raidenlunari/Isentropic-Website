@@ -4,6 +4,13 @@ interface Props {
   name: string;
   type?: string;
   required?: boolean;
+  // Quoted deliberately: an unquoted `as` key here triggers a false-positive
+  // `ts(6196) 'Props' is declared but never used` hint from `astro check`
+  // (verified in isolation — any Props interface with a property literally
+  // named `as` reproduces it, unrelated to whether it's destructured or
+  // used). Quoting the key on both this interface and the destructure below
+  // avoids the compiler quirk without changing the prop name callers use.
+  // Do not "tidy" these quotes away.
   "as"?: "input" | "textarea" | "select";
   options?: string[];
   help?: string;
