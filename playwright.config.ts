@@ -23,7 +23,19 @@ export default defineConfig({
     // from what ships to Netlify, so e2e tests must exercise `dist/`.
     command: "npm run build && npm run preview",
     url: "http://localhost:4321",
-    reuseExistingServer: !process.env.CI,
+    // Always false, in CI and locally. `reuseExistingServer` does not just
+    // skip *waiting* for boot - if anything already answers at `url` it
+    // skips running `command` at all. That is fine in front of a dev
+    // server (always reflects current source), but not in front of a
+    // one-shot `build && preview`: a stray preview process left over from
+    // an earlier run, or one a developer started by hand, would make the
+    // suite silently test whatever `dist/` happened to contain instead of
+    // rebuilding from current source. This project's e2e strategy depends
+    // on every run testing freshly built output, so that guarantee is not
+    // negotiable for a bit of local speed. Close any server already
+    // listening on 4321 before running tests; Playwright will error
+    // loudly if you don't, rather than fail silently.
+    reuseExistingServer: false,
     // `astro preview` (like `astro dev`) auto-detects AI coding agent
     // environments and daemonizes itself in the background, which makes the
     // launching process exit immediately (0 exit code) before Playwright's
