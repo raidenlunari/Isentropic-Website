@@ -6,11 +6,14 @@ import Rail from "../components/Rail.astro";
 import RailItem from "../components/RailItem.astro";
 import PostCard from "../components/PostCard.astro";
 import { site } from "../data/site";
-import { publishedPosts, sortByDateDesc, withYearMarkers } from "../lib/posts";
+import {
+  publishedPosts,
+  sortByDateDesc,
+  sortByOrder,
+  withYearMarkers,
+} from "../lib/posts";
 
-const boardEntries = (await getCollection("board")).sort(
-  (a, b) => a.data.order - b.data.order,
-);
+const boardEntries = sortByOrder(await getCollection("board"));
 const board = await Promise.all(
   boardEntries.map(async (member) => {
     const { Content } = await render(member);

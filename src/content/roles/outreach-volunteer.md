@@ -4,7 +4,7 @@ category: "Education"
 location: "Regional (Pacific Northwest)"
 commitment: "Flexible, event-based"
 open: true
-order: 1
+order: 11
 ---
 
 Outreach volunteers represent the organization at community events —

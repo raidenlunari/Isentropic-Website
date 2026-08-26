@@ -26,8 +26,14 @@ test("sitemap is generated", async ({ request }) => {
   expect(res.status()).toBe(200);
 });
 
+// Both halves of the name are asserted. An earlier version of this test
+// collected only titles into `seen` and checked descriptions for
+// non-emptiness, which would have passed while all five pages shared the
+// single sitewide `site.description` - the exact regression this test
+// exists to catch. Descriptions get the same Set treatment as titles.
 test("each page carries a distinct title and description", async ({ page }) => {
-  const seen = new Set<string>();
+  const seenTitles = new Set<string>();
+  const seenDescriptions = new Set<string>();
   for (const route of ["/", "/community", "/research", "/products", "/contribute"]) {
     await page.goto(route);
     const title = await page.title();
@@ -35,8 +41,13 @@ test("each page carries a distinct title and description", async ({ page }) => {
       .locator('meta[name="description"]')
       .getAttribute("content");
     expect(title.trim().length).toBeGreaterThan(0);
-    expect(desc?.trim().length).toBeGreaterThan(0);
-    expect(seen.has(title)).toBe(false);
-    seen.add(title);
+    expect(desc?.trim().length ?? 0).toBeGreaterThan(0);
+    expect(seenTitles.has(title), `${route} repeats an earlier title`).toBe(false);
+    expect(
+      seenDescriptions.has(desc!.trim()),
+      `${route} repeats an earlier description`,
+    ).toBe(false);
+    seenTitles.add(title);
+    seenDescriptions.add(desc!.trim());
   }
 });

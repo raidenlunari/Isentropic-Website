@@ -16,6 +16,17 @@ export function sortByDateAsc<T extends Dated>(items: T[]): T[] {
   );
 }
 
+type Ordered = { data: { order: number } };
+
+// Shared ascending sort for collections that carry an explicit `order`
+// field (board members today). Non-mutating, like every other helper here:
+// `getCollection()` hands back an array the caller does not own, and
+// sorting it in place would reorder it for every other consumer in the
+// same build.
+export function sortByOrder<T extends Ordered>(items: T[]): T[] {
+  return [...items].sort((a, b) => a.data.order - b.data.order);
+}
+
 export function publishedPosts<T extends Draftable>(items: T[]): T[] {
   return items.filter((i) => !i.data.draft);
 }

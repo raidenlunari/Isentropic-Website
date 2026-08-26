@@ -4,7 +4,7 @@ category: "Education"
 location: "Portland, OR"
 commitment: "One week in summer"
 open: true
-order: 0
+order: 10
 ---
 
 Summer camp instructors lead a week of introductory robotics activities

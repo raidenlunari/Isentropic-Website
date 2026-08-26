@@ -246,8 +246,10 @@ have an entry at all).
      At least one name is required.
    - `abstract`: one paragraph summarizing the work, shown in the
      collapsed row.
-   - `synopsis`: a shorter, plain-language version of the abstract,
-     shown alongside it.
+   - `synopsis`: a shorter, plain-language version of the abstract. It
+     is not shown in the collapsed row alongside the abstract — it is
+     the first thing inside the dropdown, above the extended detail, and
+     is only visible once a visitor expands the entry.
    - `manuscriptAvailable`: whether visitors can ask for the full
      write-up. Set this to `true` to show a request form on the entry,
      or to `false` to hide that form — for example, while the full
@@ -302,23 +304,24 @@ changing one role's `order` number does not just move that role within
 its own category — a very low or very high number can shift its entire
 category section earlier or later on the page.
 
-For example, in the roles that exist today, `build-team-volunteer.md`
-(category Engineering) and `summer-camp-instructor.md` (category
-Education) are already both set to `order: 0`. The template also
-defaults new roles to `order: 0`. If you copy the template for a new
-role and leave `order` at its default, that new role joins the same tie
-— and depending on which category it belongs to, it can change which
-category section appears first on the page, not just where the new role
-sits within its own category.
+For example, suppose an Engineering role and an Education role were both
+set to `order: 0`. Which of the two categories appears first on the page
+would then be decided by a tie-break you cannot see in either file. The
+template defaults new roles to `order: 0`, so copying it and leaving
+that default in place is the easiest way to create such a tie by
+accident.
 
-To avoid this: before saving a new role, look at the `order` values
-already used by roles in its category and pick a value that continues
-that category's own sequence (for example, one higher than the largest
-`order` already used there), rather than leaving the template's default
-of `0` in place. If you want to reorder roles within one category
-without disturbing the others, change their `order` numbers by small
-amounts relative to each other, and check the Contribute page afterward
-to confirm the category sections still appear in the order you expect.
+The roles in the repository today avoid this by giving each category its
+own block of numbers: Engineering uses `0` and `1`, Education uses `10`
+and `11`. Follow the same pattern. Before saving a new role, look at the
+`order` values already used by roles in its category and pick a value
+that continues that category's own block (for example, one higher than
+the largest `order` already used there), rather than leaving the
+template's default of `0` in place. If you want to reorder roles within
+one category without disturbing the others, change their `order` numbers
+by small amounts relative to each other, staying inside that category's
+block, and check the Contribute page afterward to confirm the category
+sections still appear in the order you expect.
 
 To retire a role that is no longer accepting applicants, **do not delete
 its file.** Instead:
@@ -337,9 +340,8 @@ its file.** Instead:
 1. Go to the `public/files/` folder in the repository — the folder
    listing, not the PDF file itself.
 2. Click "Add file," then "Upload files," and upload the new PDF using
-   the exact same file name, `isentropic-sponsor-packet.pdf`. GitHub
-   will notice the name matches an existing file and ask you to confirm
-   replacing it.
+   the exact same file name, `isentropic-sponsor-packet.pdf`. Uploading
+   a file under a name that already exists replaces the old one.
 3. Commit the change, as described above. There is nothing else to
    update — the "Sponsor packet (PDF, ... KB)" file size shown next to
    the download link on the Contribute page is calculated automatically
@@ -370,6 +372,19 @@ toolbar. Here is what is available:
   smaller one. Start with `##`, not `#` — the page's own title already
   uses a single `#` and every section inside your writing should be one
   level below it.
+
+  **Headings belong in blog posts (Task 1), research entries (Task 6),
+  product entries (Task 7), and volunteer roles (Task 8).** In those
+  four, the site places your `##` sections correctly underneath the
+  entry's own title. **Do not use `##` headings in an event body (Task
+  5).** An event's title is the clickable row itself rather than a
+  heading, so a heading inside the body would have nothing to sit under
+  and would read, to someone navigating the page by heading, as a new
+  top-level section of the Community page. Event bodies are short: write
+  them as plain paragraphs, the way the existing event files do, or — if
+  you need to break them up — use a bold label on its own line
+  (`**Attendance**`) with a list beneath it, the way the volunteer role
+  files do.
 - **Lists:** start each line with `-` for a bulleted list, or `1.`,
   `2.`, `3.` for a numbered one.
 - **Tables:** write them using the Markdown table syntax shown here:

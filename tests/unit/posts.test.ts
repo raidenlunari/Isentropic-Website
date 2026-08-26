@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   sortByDateDesc,
+  sortByOrder,
   publishedPosts,
   filterByTopic,
   withYearMarkers,
@@ -34,6 +35,34 @@ describe("sortByDateDesc", () => {
     const input = [post("old", "2025-01-01"), post("new", "2026-01-01")];
     sortByDateDesc(input);
     expect(input.map((p) => p.id)).toEqual(["old", "new"]);
+  });
+});
+
+const ordered = (id: string, order: number) => ({ id, data: { order } }) as any;
+
+describe("sortByOrder", () => {
+  it("orders by the order field, lowest first", () => {
+    const out = sortByOrder([
+      ordered("third", 2),
+      ordered("first", 0),
+      ordered("second", 1),
+    ]);
+    expect(out.map((m) => m.id)).toEqual(["first", "second", "third"]);
+  });
+
+  it("keeps tied entries in their original relative order", () => {
+    const out = sortByOrder([ordered("a", 0), ordered("b", 0), ordered("c", 0)]);
+    expect(out.map((m) => m.id)).toEqual(["a", "b", "c"]);
+  });
+
+  it("does not mutate its input", () => {
+    const input = [ordered("second", 1), ordered("first", 0)];
+    sortByOrder(input);
+    expect(input.map((m) => m.id)).toEqual(["second", "first"]);
+  });
+
+  it("returns an empty array unchanged", () => {
+    expect(sortByOrder([])).toEqual([]);
   });
 });
 
