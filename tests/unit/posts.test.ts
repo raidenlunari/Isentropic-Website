@@ -68,4 +68,12 @@ describe("withYearMarkers", () => {
   it("returns an empty array unchanged", () => {
     expect(withYearMarkers([])).toEqual([]);
   });
+  it("marks each year exactly once even with unsorted repeated years", () => {
+    const out = withYearMarkers([
+      post("a", "2025-01-01"),
+      post("b", "2026-06-01"),
+      post("c", "2025-12-01"),
+    ]);
+    expect(out.map((e) => e.yearMarker)).toEqual(["2025", "2026", null]);
+  });
 });

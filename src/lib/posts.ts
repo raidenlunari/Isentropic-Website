@@ -27,11 +27,11 @@ export function filterByTopic<T extends Topical>(items: T[], topic: Topic): T[] 
 export function withYearMarkers<T extends Dated>(
   items: T[],
 ): Array<{ item: T; yearMarker: string | null }> {
-  let previous: number | null = null;
+  const seen = new Set<number>();
   return items.map((item) => {
     const year = item.data.date.getUTCFullYear();
-    const yearMarker = year === previous ? null : String(year);
-    previous = year;
+    const yearMarker = seen.has(year) ? null : String(year);
+    seen.add(year);
     return { item, yearMarker };
   });
 }

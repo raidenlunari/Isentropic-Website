@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatDate } from "../../src/lib/dates";
+import { formatDate, FORMATTER } from "../../src/lib/dates";
 
 describe("formatDate", () => {
   it("matches the reference format", () => {
@@ -7,5 +7,8 @@ describe("formatDate", () => {
   });
   it("does not shift the day across timezones", () => {
     expect(formatDate(new Date("2026-01-01T00:00:00Z"))).toBe("January 1, 2026");
+  });
+  it("uses UTC timezone in formatter", () => {
+    expect(FORMATTER.resolvedOptions().timeZone).toBe("UTC");
   });
 });
