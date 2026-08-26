@@ -98,6 +98,16 @@ read this before changing them:
   volunteer roles — is in `tests/e2e/a11y.spec.ts`; the single-`h1`
   sweep over every route is in `tests/e2e/shell.spec.ts`; the article
   body's "starts at `h2`" check is in `tests/e2e/article.spec.ts`.
+- **Screenshot comparison is skipped in CI (`ignoreSnapshots`), and that
+  is deliberate.** Playwright names baselines per platform because font
+  rasterization differs between Windows, Linux, and macOS, so the one
+  committed baseline (`wordmark-chromium-win32.png`) cannot match a Linux
+  runner. Comparing it in CI would only assert that CI's font stack
+  matches whichever machine last regenerated the image. The wordmark
+  test's real gate — the canvas glyph-width comparison against a fallback
+  face — still runs everywhere, including CI. If you regenerate the
+  baseline with `--update-snapshots`, open the PNG and look at it: a
+  baseline refreshed without inspection approves whatever renders.
 - **Element-id uniqueness has its own assertion in
   `tests/e2e/forms.spec.ts`, and every form control is checked through
   `element.labels`.** Neither is redundant with the axe sweep. axe's

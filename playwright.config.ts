@@ -6,6 +6,16 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
+  // Screenshot baselines are per-platform: Playwright names them
+  // `-{platform}` because font rasterization differs between Windows, Linux,
+  // and macOS, so one committed baseline cannot match everywhere. The only
+  // screenshot in this suite is the wordmark, and its real correctness gate
+  // is the canvas glyph-width assertion beside it (tests/e2e/wordmark.spec.ts),
+  // which compares the rendered phi against a fallback face and runs on every
+  // platform. The image exists so a human can look at the glyph; comparing it
+  // in CI would only assert that CI's font stack matches the machine that last
+  // regenerated it. Skip the pixel comparison in CI, keep it locally.
+  ignoreSnapshots: !!process.env.CI,
   reporter: "html",
   use: {
     baseURL: "http://localhost:4321",
