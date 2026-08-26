@@ -60,7 +60,7 @@ Both families are self-hosted as WOFF2 with `font-display: swap` and full fallba
 
 ### 3.3 Layout
 
-- Index pages: content column capped at 1264px, horizontal padding 24px.
+- Index pages: content column capped at 1120px, centered, horizontal padding 24px. The reference sets no explicit cap here; 1120px is a deliberate choice, since an unbounded monospace index becomes unreadable on wide displays.
 - Article pages: prose column capped at 768px, centered. Figures may break out to 1024px.
 - Cards: padding `8px 12px`, inset 24px from the rail, 16px vertical gap between entries.
 
@@ -237,7 +237,7 @@ Netlify detects forms by parsing deployed HTML at build time. A hidden static st
 - Visible focus indicators on every interactive element, never removed.
 - A skip link to main content, semantic landmarks, and a single `h1` per page.
 - `prefers-reduced-motion: reduce` suppresses all transitions and transforms.
-- Color contrast meets WCAG AA. `#686868` on `#F5F4EF` measures 5.3:1.
+- Color contrast meets WCAG AA. `#686868` on `#F5F4EF` measures 5.06:1, clearing the 4.5:1 threshold for normal text. Muted text is never the sole carrier of essential information.
 - Images carry explicit dimensions and schema-required alt text.
 - Per-page metadata, Open Graph tags, `sitemap.xml`, and an RSS feed at `/rss.xml` generated from the blog collection.
 
@@ -253,9 +253,9 @@ Netlify detects forms by parsing deployed HTML at build time. A hidden static st
 2. Token stylesheet reproducing the extracted palette, type, and spacing.
 3. Nine components as specified in section 8.
 4. Six content collections with Zod schemas and templates.
-5. Seven page routes plus the dynamic article route.
+5. Six static page routes (`/`, `/community`, `/research`, `/products`, `/contribute`, `/thanks`), the dynamic article route `/blog/<slug>`, and the generated `/rss.xml` and `/sitemap.xml`.
 6. Three working forms and the detection stub.
-7. Placeholder content: four board entries, at least six blog posts covering all three tiers and all three topics, four events, two research entries, two products, and four open roles.
+7. Placeholder content: four board entries; eight blog posts, covering all three tiers and all three topics, with at least one post carrying two topics to exercise multi-page routing; four events; two research entries, one with `manuscriptAvailable: false`; two products, one hardware and one software; and four open roles across at least two categories.
 8. Placeholder assets at final paths: four headshots, one sponsor packet PDF.
 9. `CONTENT-GUIDE.md`, `README.md`, `netlify.toml`.
 
