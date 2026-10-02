@@ -52,4 +52,17 @@ const { href, title, date, summary, tier } = Astro.props;
     flex-shrink: 0;
     white-space: nowrap;
   }
+
+  /* On a phone the single-line title had about 150px beside the date and
+     truncated every real title to its first three words. Let the date
+     drop under the title and the title wrap, the same break Disclosure
+     applies to its summary meta. */
+  @media (max-width: 640px) {
+    .row {
+      flex-wrap: wrap;
+    }
+    .title {
+      white-space: normal;
+    }
+  }
 </style>

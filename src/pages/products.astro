@@ -36,7 +36,7 @@ const productUpdates = withYearMarkers(
   <p class="intro">
     Products built by Isentropic Robotics members for VEX teams. Hardware
     is listed first, followed by software; each entry opens to its
-    specifications, requirements, and related links.
+    specifications and requirements, with links where there are any.
   </p>
 
   <h2 class="section-heading">Product entries</h2>
@@ -48,7 +48,9 @@ const productUpdates = withYearMarkers(
           <span class="product-status">{item.data.status}</span>
         </div>
         <p class="product-summary">{item.data.summary}</p>
-        <Disclosure summary="Specifications and links">
+        <Disclosure
+          summary={item.data.links.length > 0 ? "Specifications and links" : "Specifications"}
+        >
           <Content />
           {item.data.links.length > 0 && (
             <ul class="product-links">

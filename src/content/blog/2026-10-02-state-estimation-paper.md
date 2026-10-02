@@ -30,7 +30,9 @@ The IF and IEKF are model-based and, unlike EWMA, receive absolute corrections f
 
 ### Physical trials
 
-A V5 robot drove four laps of a 1 m square, about 16 m in total, ten times, with all four configurations evaluated on the same recorded measurements and an external AprilTag camera as ground truth. Position error is in centimetres, as mean plus or minus standard deviation across the ten runs.
+A V5 robot drove four laps of a 1 m square, about 16 m in total, ten times, with all four configurations evaluated on the same recorded measurements and an external AprilTag camera as ground truth.
+
+Table 1. Four-lap physical experiment, ten runs. Position error in cm, mean ± standard deviation.
 
 | Metric | No filter | EWMA | IF | IEKF |
 | --- | --- | --- | --- | --- |

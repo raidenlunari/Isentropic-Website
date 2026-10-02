@@ -3,9 +3,9 @@ interface Props {
   label: string;
   name: string;
   // Namespace for every id this field generates. REQUIRED, and required on
-  // purpose: field names are not unique across a page. /contribute renders
-  // two forms that both have an `email` and a `message`, and /research
-  // renders one manuscript form per entry with the manuscript available.
+  // purpose: field names are not unique across a page. /parts renders two
+  // forms that both have an `email`, and /research renders one manuscript
+  // form per entry with the manuscript available.
   // Deriving ids from the field name alone made two controls share
   // id="field-email", which silently moved one form's <label for> onto the
   // other form's input and left the second input with no accessible name
@@ -21,7 +21,7 @@ interface Props {
   // every form at once. The gate is `npm test`, which runs `astro check`
   // before anything else, backed by tests/e2e/forms.spec.ts asserting
   // page-wide id uniqueness and exactly one `element.labels` entry per
-  // control on both multi-form pages. Run it before deploying.
+  // control on every multi-form route. Run it before deploying.
   //
   // Pass the Netlify form name (site.formNames.*), plus the entry slug
   // wherever one form is rendered once per entry.

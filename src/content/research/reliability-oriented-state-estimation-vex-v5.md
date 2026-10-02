@@ -40,6 +40,8 @@ outlier can prevent the alignment and eliminate the intended reset.
 Candidate filters were screened on computational cost, outlier handling,
 and drift handling.
 
+Table 1. Comparison of candidate filters for VEX V5.
+
 | Filter | Computational cost | Outlier handling | Drift handling |
 | --- | --- | --- | --- |
 | EWMA | Very low; simple recursive update | Poor to moderate; sensitive to large spikes | Poor; does not correct long-term drift |
@@ -87,8 +89,10 @@ IF, and IEKF) were evaluated on the same sensor measurements from each
 run. Ground truth came from an external camera tracking an AprilTag on
 the robot, independent of the GPS measurements used for correction;
 endpoint error was also measured against a marked field location at the
-end of each lap. Position error is reported in centimetres as mean plus
-or minus standard deviation across the ten runs.
+end of each lap.
+
+Table 2. Four-lap physical experiment results, ten runs. Position error in
+cm, mean ± standard deviation; lap-end rows are the mean endpoint error.
 
 | Metric | No filter | EWMA | IF | IEKF |
 | --- | --- | --- | --- | --- |
@@ -128,16 +132,20 @@ A slalom trajectory with repeated alternating turns served as the
 heading-dynamics stress test. Twenty random seeds were evaluated per
 estimator.
 
+Table 3. Slalom simulation results, 20 seeds, mean ± standard deviation.
+
 | Metric | No filter | EWMA | IF | IEKF |
 | --- | --- | --- | --- | --- |
 | Heading RMSE (°) | 0.60 ± 0.02 | 3.15 ± 0.09 | 0.49 ± 0.02 | 0.46 ± 0.02 |
 | ATE (cm) | 1.77 ± 0.05 | 3.04 ± 0.09 | 0.92 ± 0.05 | 0.85 ± 0.03 |
 | Final error (cm) | 2.34 ± 0.07 | 1.14 ± 0.03 | 0.64 ± 0.04 | 0.64 ± 0.03 |
 
-![One slalom simulation trial. Top: the robot's pure-pursuit trajectory against the waypoint centreline and ground truth, with the unfiltered and SE(2) IEKF estimates overlaid. Bottom: heading error over time on a log scale for no filter, EWMA, the Information Filter, and the SE(2) IEKF.](/images/research/rams-2027-slalom-simulation.png)
-
-Fig. 1. Slalom course, one trial. Top: pure-pursuit trajectory
-(look-ahead distance 0.25 m). Bottom: heading error over time, log scale.
+<figure>
+  <a href="/images/research/rams-2027-slalom-simulation.png">
+    <img src="/images/research/rams-2027-slalom-simulation.png" alt="Slalom trajectory plot and heading-error-versus-time plot for one simulation trial, comparing no filter, EWMA, the Information Filter, and the SE(2) IEKF." width="770" height="664" loading="lazy" />
+  </a>
+  <figcaption>Fig. 1. Slalom course, one trial. Top: pure-pursuit trajectory (look-ahead distance 0.25 m). Bottom: heading error over time, log scale. Opens the full-size image.</figcaption>
+</figure>
 
 The IEKF produced a heading RMSE of 0.46 degrees and an ATE of 0.85 cm,
 against 0.49 degrees and 0.92 cm for the IF; both improved on the
@@ -154,9 +162,11 @@ update had a 10 percent probability of a 0.5 to 1.0 m position outlier
 per axis; in the dropout condition each update had a 30 percent
 probability of being dropped; a third condition combined both. The
 unfiltered and EWMA configurations receive no GPS corrections and are
-unaffected. ATE and
-heading RMSE are mean plus or minus standard deviation across seeds; peak
-error is the mean across seeds.
+unaffected.
+
+Table 4. Outlier and dropout robustness, 20 seeds. ATE and heading RMSE
+are mean ± standard deviation across seeds; peak error is the mean across
+seeds.
 
 | Condition | Estimator | ATE (cm) | Peak error (cm) | Heading RMSE (°) |
 | --- | --- | --- | --- | --- |
@@ -183,6 +193,8 @@ Cost was compared analytically from the update equations, counting
 persistent scalar values and approximate arithmetic operations per 10 ms
 update with the 5 Hz GPS update amortized over the 20 prediction steps
 between readings.
+
+Table 5. Analytical computational cost comparison.
 
 | Estimator | Persistent scalar values | Operations per update (approx.) | Relative cost (IEKF = 1.0) |
 | --- | --- | --- | --- |

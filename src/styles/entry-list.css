@@ -73,6 +73,35 @@
   padding: 0 0 4px 20px;
 }
 
+/* A research entry's body is a paper, not an event blurb: at the
+   Disclosure default of 12px across the full 1120px card it ran to about
+   135 characters a line. Set it at 14px and hold the text to the prose
+   measure, while tables and figures keep the full card width. The
+   `details` in the selector outranks Disclosure.astro's own scoped rule. */
+.research-entry details .disclosure-body,
+.product details .disclosure-body {
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.research-entry .disclosure-body > :not(.table-scroll):not(figure),
+.product .disclosure-body > :not(.table-scroll):not(figure) {
+  max-width: var(--measure-prose);
+}
+
+@media (max-width: 640px) {
+  /* Page gutter + card padding + body indent left about 250px of text on
+     a 360px phone. Trim the two inner paddings to widen the column. */
+  .research-entry,
+  .product {
+    padding: 12px;
+  }
+  .research-entry .disclosure-body,
+  .product .disclosure-body {
+    padding-left: 8px;
+  }
+}
+
 .section-heading {
   margin: 48px 0 16px;
   font-family: var(--font-display);
@@ -93,6 +122,15 @@
   overflow-x: auto;
   max-width: 100%;
   margin: 0 0 12px;
+  /* Scroll cue, as in prose.css, over the card's white. */
+  background:
+    linear-gradient(to right, var(--card) 30%, rgba(255, 255, 255, 0)),
+    linear-gradient(to left, var(--card) 30%, rgba(255, 255, 255, 0)) 100% 0,
+    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0)),
+    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0)) 100% 0;
+  background-repeat: no-repeat;
+  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+  background-attachment: local, local, scroll, scroll;
 }
 
 /* Cells wrap, unlike the nowrap cells in prose.css: a paper's comparison
@@ -124,6 +162,26 @@
 .product th {
   background: var(--background);
   font-weight: 600;
+}
+
+.research-entry caption,
+.product caption {
+  caption-side: top;
+  text-align: left;
+  padding: 0 0 6px;
+  font-weight: 600;
+}
+
+.research-entry .disclosure-body figure,
+.product .disclosure-body figure {
+  margin: 12px 0;
+}
+
+.research-entry .disclosure-body figcaption,
+.product .disclosure-body figcaption {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted-foreground);
 }
 
 /* Reference lists carry DOI and documentation URLs with no break

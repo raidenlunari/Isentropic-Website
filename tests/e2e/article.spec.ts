@@ -117,10 +117,10 @@ test("the article body is measurably Source Sans 3, not a fallback", async ({
 });
 
 // The state-estimation paper post carries representative Markdown
-// (nested headings, lists, a fenced code block, two tables, a figure, and
-// links) drawn from the paper itself, so the reading layer's heading,
-// list, and scroll rules are exercised by real content and a committed
-// test rather than staying proven only in principle.
+// (nested headings, lists, a fenced code block, a captioned table, a
+// figure, and links) drawn from the paper itself, so the reading layer's
+// heading, list, and scroll rules are exercised by real content and a
+// committed test rather than staying proven only in principle.
 test("headings render in the reading layer, and the article has exactly one h1", async ({
   page,
 }) => {
@@ -189,8 +189,8 @@ test("the table keeps its table accessibility role while its wrapper scrolls", a
   page,
 }) => {
   await page.goto(ARTICLE_PATH);
-  // The post carries two tables: the physical-trial results and nothing
-  // else wide enough to need scrolling. Both must keep their role.
+  // The post carries one table, the physical-trial results, which is the
+  // one wide enough to need scrolling; it must keep its role.
   const tables = page.getByRole("table");
   expect(await tables.count()).toBeGreaterThan(0);
 

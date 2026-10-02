@@ -91,6 +91,18 @@
   background: var(--card);
   border: 1px solid var(--border-soft);
   overflow-x: auto;
+  /* Same scroll cue as .table-scroll above, over the block's own
+     background. rehype-wrap-tables gives every pre a focus stop so the
+     scrolling is also reachable from the keyboard. */
+  background-image:
+    linear-gradient(to right, var(--card) 30%, rgba(255, 255, 255, 0)),
+    linear-gradient(to left, var(--card) 30%, rgba(255, 255, 255, 0)),
+    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0)),
+    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0));
+  background-position: 0 0, 100% 0, 0 0, 100% 0;
+  background-repeat: no-repeat;
+  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+  background-attachment: local, local, scroll, scroll;
 }
 
 .prose pre code {
@@ -114,6 +126,19 @@
   overflow-x: auto;
   max-width: 100%;
   margin: 0 0 24px;
+  /* Scroll cue. Mobile browsers draw no scrollbar, so a table wider than
+     the column would otherwise look like it ends at the clipped edge. Two
+     page-coloured covers scroll with the content (attachment: local) and
+     two fixed shadows sit beneath them, so a shadow shows on whichever
+     edge still has content and vanishes once the table fits. */
+  background:
+    linear-gradient(to right, var(--background) 30%, rgba(245, 244, 239, 0)),
+    linear-gradient(to left, var(--background) 30%, rgba(245, 244, 239, 0)) 100% 0,
+    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0)),
+    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0)) 100% 0;
+  background-repeat: no-repeat;
+  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+  background-attachment: local, local, scroll, scroll;
 }
 
 .prose table {
@@ -136,6 +161,25 @@
 .prose th {
   background: var(--card);
   font-weight: 600;
+}
+
+/* A "Table N." paragraph written just above a table becomes its caption
+   (rehype-wrap-tables, astro.config.mjs). */
+.prose caption {
+  caption-side: top;
+  text-align: left;
+  padding: 0 0 8px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+/* Bare Markdown images (`![alt](src)`), which CONTENT-GUIDE.md Task 11
+   teaches, land as <p><img></p> rather than inside a <figure>, so they
+   need their own bound or a wide file renders at its natural width. */
+.prose img {
+  display: block;
+  max-width: 100%;
+  height: auto;
 }
 
 .prose figure {

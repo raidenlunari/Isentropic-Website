@@ -11,6 +11,8 @@ Isentropic Robotics ran its East Bay Robotics Camp this summer in two sessions. 
 
 ## Sessions
 
+Table 1. Camp sessions, 2026.
+
 | Session | Dates |
 | --- | --- |
 | Session 1 | June 23 to July 3, 2026 |
@@ -26,9 +28,7 @@ Instruction was organized around three areas:
 
 ## Attendance and revenue
 
-| | |
-| --- | --- |
-| Attendees | 13 |
-| Program revenue | $7,500 |
+- 13 attendees
+- $7,500 in program revenue
 
 Questions about future sessions can be sent to the organization by email, and anyone interested in helping with future sessions can apply through the [Contribute](/contribute) page.

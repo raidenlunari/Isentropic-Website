@@ -416,6 +416,12 @@ toolbar. Here is what is available:
   syntax, like the example above, gets the site's automatic
   scroll-on-narrow-screens treatment. That treatment applies in blog
   posts, research entries, and product entries alike.
+
+  To give a table a title, write a short paragraph starting with
+  `Table 1.` (the number, then a period) on the line directly above it,
+  with a blank line between the two. That paragraph becomes the table's
+  caption, and screen readers announce it as the table's name. Number
+  the tables in order within the one file.
 - **Code:** wrap a short piece of code or a technical term in single
   backticks, like `` `this` ``. For a longer block of code, put three
   backticks on their own line before and after it.

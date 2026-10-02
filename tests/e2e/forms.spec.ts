@@ -253,7 +253,7 @@ test("every rendered form's field names match the Netlify detection stub", async
   const stub = new Map(
     (await collect(page)).map((form) => [form.name, form.fields]),
   );
-  // Derived from site.formNames rather than pinned, so adding a fourth
+  // Derived from site.formNames rather than pinned, so adding another
   // form to the site without declaring it in the stub fails here too.
   expect(stub.size).toBe(Object.keys(site.formNames).length);
 

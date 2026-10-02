@@ -8,7 +8,10 @@ const openRoleCount = () =>
 const ROUTES = [
   "/", "/community", "/parts", "/research", "/products", "/contribute",
   "/thanks", "/blog/2026-10-02-state-estimation-paper",
+  "/blog/2026-07-17-east-bay-robotics-camp-report",
 ];
+
+const AXE_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"];
 
 for (const route of ROUTES) {
   test(`${route} has no accessibility violations`, async ({ page }) => {
@@ -20,8 +23,25 @@ for (const route of ROUTES) {
       // always structurally legal to axe), but it does surface
       // landmark-one-main, region, page-has-heading-one, and empty-heading,
       // which are worth having checked on every route.
-      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"])
+      .withTags(AXE_TAGS)
       .analyze();
+    expect(results.violations).toEqual([]);
+  });
+}
+
+// A second axe pass at phone width with every disclosure open. Some rules
+// only have something to flag once content overflows: a table wrapper or
+// a code block that scrolls at 360px but fits at desktop width is invisible
+// to the sweep above (scrollable-region-focusable), and a disclosure's
+// body is not rendered until it is open.
+for (const route of ["/research", "/products", "/blog/2026-10-02-state-estimation-paper"]) {
+  test(`${route} has no accessibility violations at 360px with disclosures open`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 360, height: 900 });
+    await page.goto(route);
+    await page.$$eval("details", (els) => els.forEach((el) => (el.open = true)));
+    const results = await new AxeBuilder({ page }).withTags(AXE_TAGS).analyze();
     expect(results.violations).toEqual([]);
   });
 }
@@ -89,12 +109,12 @@ test("product entry bodies nest strictly under their entry's h3 title", async ({
 
 // Volunteer roles are the third place an entry's Markdown body is spliced
 // in under an <h3> entry title (contribute.astro renders each role title as
-// an h3). The seeded role bodies use bold labels rather than "##", so this
-// assertion is quiet today - but CONTENT-GUIDE.md Task 11 tells authors to
-// write "## ..." headings, and src/content/roles/ is in the level-shifting
+// an h3). No role file exists today, so the assertion has nothing to check
+// until one is added - but CONTENT-GUIDE.md Task 11 tells authors to write
+// "## ..." headings, and src/content/roles/ is in the level-shifting
 // plugin's list precisely so that a role author who follows that guidance
 // gets h4s under the h3 rather than h2s over it. This is the assertion that
-// holds that arrangement in place.
+// holds that arrangement in place once a role is listed.
 test("role bodies nest strictly under their role's h3 title", async ({ page }) => {
   await page.goto("/contribute");
   const entries = await headingLevelsPerEntry(page, ".role");

@@ -50,7 +50,7 @@ const PROGRAM_STATUS_OPTIONS = [
       <h3>Collection</h3>
       <p>
         Donors, whether retired teams, graduating seniors, event partners,
-        or school districts, complete the donation form below. It asks for
+        or school districts, complete the <a href="#donate">donation form</a> below. It asks for
         contact information and organization name, the parts available to
         donate, and when they are available, along with whether the donor
         can drop the parts off or needs them picked up. Pickup is limited.
@@ -76,8 +76,8 @@ const PROGRAM_STATUS_OPTIONS = [
     <li>
       <h3>Distribution</h3>
       <p>
-        Underfunded or new robotics programs submit the grant request form
-        below, describing the program, the specific parts or equipment it is
+        Underfunded or new robotics programs submit the <a href="#request">parts request form</a> below
+        (the IPD grant request), describing the program, the specific parts or equipment it is
         missing, and a mentor or coach to contact along with the address of
         its meeting space. Requests are reviewed on a rolling basis, and
         approved teams are matched with kit bundles based on what the
@@ -94,7 +94,7 @@ const PROGRAM_STATUS_OPTIONS = [
     their hardware before hand-off. Hours are awarded case by case.
   </p>
 
-  <h2 class="section-heading">Donate parts</h2>
+  <h2 class="section-heading" id="donate">Donate parts</h2>
   <p class="section-intro">
     For teams, individuals, event partners, and school districts with VEX
     parts to pass on.
@@ -136,7 +136,7 @@ const PROGRAM_STATUS_OPTIONS = [
     </NetlifyForm>
   </div>
 
-  <h2 class="section-heading">Request parts</h2>
+  <h2 class="section-heading" id="request">Request parts</h2>
   <p class="section-intro">
     For underfunded or new robotics programs. Requests are reviewed on a
     rolling basis.
@@ -202,6 +202,9 @@ const PROGRAM_STATUS_OPTIONS = [
   }
   .section-heading:first-of-type {
     margin-top: 40px;
+  }
+  .section-heading[id] {
+    scroll-margin-top: 16px;
   }
 
   .aims,
