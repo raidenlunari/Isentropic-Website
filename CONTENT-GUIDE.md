@@ -391,8 +391,8 @@ toolbar. Here is what is available:
   top-level section of the Community page. Event bodies are short: write
   them as plain paragraphs, the way the existing event files do, or — if
   you need to break them up — use a bold label on its own line
-  (`**Attendance**`) with a list beneath it, the way the volunteer role
-  files do.
+  (`**By the numbers**`) with a list beneath it, the way the East Bay
+  Robotics Camp event file does.
 - **Lists:** start each line with `-` for a bulleted list, or `1.`,
   `2.`, `3.` for a numbered one.
 - **Images:** upload the image file to a folder under `public/images/`

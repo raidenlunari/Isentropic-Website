@@ -1,5 +1,5 @@
 ---
-title: "Design and kinematic analysis of a string-based differential elevator"
+title: "Design and kinematic analysis of a string-based differential elevator for VEX Robotics"
 date: 2026-10-02
 summary: "A forthcoming paper from Team 16610A on the design and kinematic analysis of a string-based differential elevator for VEX Robotics."
 tier: standard

@@ -15,11 +15,14 @@ import { publishedPosts } from "./content";
 
 // Home renders the board collection; community/research/products each
 // render their own collection plus role/event/research/product bodies;
-// contribute renders the roles collection. Between the five page routes
-// and every published blog post, all six collections appear somewhere.
+// contribute renders the roles collection; parts renders no collection
+// at all but is swept for symmetry with the other page tests. Between
+// the six page routes and every published blog post, all six collections
+// appear somewhere.
 const ROUTES = [
   "/",
   "/community",
+  "/parts",
   "/research",
   "/products",
   "/contribute",

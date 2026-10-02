@@ -40,7 +40,7 @@ test("draft posts do not get a route, and are excluded from the homepage", async
 
   await page.goto("/");
   await expect(
-    page.getByText("Design and kinematic analysis of a string-based differential elevator"),
+    page.getByText("Design and kinematic analysis of a string-based differential elevator for VEX Robotics"),
   ).toHaveCount(0);
 });
 

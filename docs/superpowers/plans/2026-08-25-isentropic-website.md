@@ -1,5 +1,13 @@
 # Isentropic Robotics Website Implementation Plan
 
+> **Historical record.** This document describes the site as it was
+> planned and launched with placeholder content. On 2026-10-02 that
+> content was replaced with the organization's real information (two
+> board members, a Parts Redistribution page with two forms, sponsorship
+> by email, and the real camp, paper, and product entries). README.md and
+> CONTENT-GUIDE.md describe the current site; this file is kept as a
+> record of the original design decisions.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a five-page static website for Isentropic Robotics, visually derived from Physical Intelligence, where all content is authored as Markdown files and all three forms submit successfully in production.

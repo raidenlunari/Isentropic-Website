@@ -4,7 +4,7 @@ title: "Replace with the role title"
 # Grouping used to cluster roles together on the Contribute page.
 # Example: "Engineering", "Outreach", "Operations"
 category: "Replace with a category"
-# Where the role is performed. Example: "Remote", "Portland, OR"
+# Where the role is performed. Example: "Remote", "Dublin, CA"
 location: "Replace with the role location"
 # Expected time commitment. Example: "5 hours/week", "One semester"
 commitment: "Replace with a commitment description"

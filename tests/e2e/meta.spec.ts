@@ -36,7 +36,7 @@ test("sitemap is generated", async ({ request }) => {
 
 // Both halves of the name are asserted. An earlier version of this test
 // collected only titles into `seen` and checked descriptions for
-// non-emptiness, which would have passed while all five pages shared the
+// non-emptiness, which would have passed while all six pages shared the
 // single sitewide `site.description` - the exact regression this test
 // exists to catch. Descriptions get the same Set treatment as titles.
 test("each page carries a distinct title and description", async ({ page }) => {
