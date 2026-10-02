@@ -31,4 +31,4 @@ Instruction was organized around three areas:
 | Attendees | 13 |
 | Program revenue | $7,500 |
 
-Questions about future sessions can be sent to the organization by email, and volunteers interested in supporting the camp can apply through the [Contribute](/contribute) page.
+Questions about future sessions can be sent to the organization by email, and anyone interested in helping with future sessions can apply through the [Contribute](/contribute) page.

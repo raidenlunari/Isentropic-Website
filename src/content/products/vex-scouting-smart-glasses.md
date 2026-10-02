@@ -1,7 +1,7 @@
 ---
 title: "VEX Scouting Smart Glasses"
 kind: software
-status: "In development"
+status: "For Even Realities G2"
 summary: "VEX Scout puts live competition data from RobotEvents on a pair of Even Realities G2 smart glasses, so a team can follow rankings, match schedules, skills standings, and its own scouting notes without looking at a phone."
 links: []
 ---
@@ -13,7 +13,7 @@ V5 Robotics Competition teams. It pulls live event data from
 events.vex.com and shows the parts a team needs between matches in the
 corner of its field of view:
 
-- the team's own standing: rank, win-loss-tie record, WP, AP, and SP, and
+- the team's own standing: rank, win-loss-tie record, WP, AP, SP, and
   high score;
 - the next match, with its number, scheduled time, field, and both
   alliances;

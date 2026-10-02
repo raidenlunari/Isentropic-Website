@@ -45,33 +45,28 @@ const hasListedRoles = openRoleTitles.length > 0;
 
 <BaseLayout
   title="Contribute"
-  description="How to sponsor Isentropic Robotics by email, or volunteer with its camp, parts redistribution, and mentorship programs."
+  description="How to sponsor Isentropic Robotics by email, or apply to volunteer."
 >
   <h1>Contribute</h1>
   <p class="intro">
-    Isentropic Robotics is a registered 501(c)(3) nonprofit supported by
-    sponsors and by volunteers. Both ways of contributing are described
+    Isentropic Robotics is a registered 501(c)(3) nonprofit. It welcomes
+    sponsors and volunteers, and both ways of contributing are described
     below.
   </p>
 
   <h2 class="section-heading">Sponsor</h2>
   <p class="section-intro">
     Sponsorship inquiries are handled by email. Write to <a class="sponsor-email" href={`mailto:${site.email}`}>{site.email}</a> with
-    a note on your organization and the kind of support you have in mind,
-    whether financial, in-kind, or a custom arrangement, and the
+    a note on your organization and the support you have in mind, and the
     organization will reply with details.
   </p>
 
   <h2 class="section-heading">Join us</h2>
   <p class="section-intro">
-    Volunteers support the East Bay Robotics Camp and the Parts
-    Redistribution Program, including the mentorship and guidance the
-    program offers to the teams that receive parts. Applications are open
-    for any of these areas, and for any other role an applicant can make a
-    case for.
+    Applications are open for volunteers.
     {hasListedRoles
       ? " Open roles are grouped by area below, each with its location and expected time commitment along with its responsibilities and qualifications."
-      : " No specific roles are listed at the moment; describe the role you are applying for in the form."}
+      : " No specific roles are listed at the moment; describe the role or area you would like to help with in the form."}
   </p>
 
   {hasListedRoles && (
