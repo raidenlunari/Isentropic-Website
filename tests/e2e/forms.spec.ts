@@ -62,11 +62,15 @@ test("every rendered manuscript field has a non-empty, distinct value", async ({
   expect(new Set(values).size).toBe(values.length);
 });
 
-test("sponsor-contact and application carry the expected Netlify attributes", async ({
-  page,
-}) => {
-  await page.goto("/contribute");
-  for (const name of ["sponsor-contact", "application"]) {
+const SINGLE_INSTANCE_FORMS: Array<{ route: string; name: string }> = [
+  { route: "/contribute", name: "application" },
+  { route: "/parts", name: "parts-donation" },
+  { route: "/parts", name: "parts-request" },
+];
+
+for (const { route, name } of SINGLE_INSTANCE_FORMS) {
+  test(`${name} on ${route} carries the expected Netlify attributes`, async ({ page }) => {
+    await page.goto(route);
     const form = page.locator(`form[name="${name}"]`);
     await expect(form).toHaveCount(1);
     await expect(form).toHaveAttribute("data-netlify", "true");
@@ -74,8 +78,8 @@ test("sponsor-contact and application carry the expected Netlify attributes", as
     await expect(form).toHaveAttribute("netlify-honeypot", "bot-field");
     const formNameInput = form.locator('input[name="form-name"]');
     await expect(formNameInput).toHaveAttribute("value", name);
-  }
-});
+  });
+}
 
 test("the application form is multipart with exactly one file input", async ({ page }) => {
   await page.goto("/contribute");
@@ -84,19 +88,32 @@ test("the application form is multipart with exactly one file input", async ({ p
   await expect(form.locator('input[type="file"]')).toHaveCount(1);
 });
 
-test("submitting the sponsor form with an invalid email does not navigate", async ({
+// Fills every field of the parts-donation form except the one the test
+// varies. Used by the validation tests below.
+async function fillDonationForm(
+  form: import("@playwright/test").Locator,
+  overrides: Partial<Record<"organization" | "email", string>> = {},
+) {
+  const organization = overrides.organization ?? "Acme Robotics";
+  if (organization !== "") {
+    await form.locator('input[name="organization"]').fill(organization);
+  }
+  await form.locator('input[name="contact-name"]').fill("Jordan Lee");
+  await form.locator('input[name="email"]').fill(overrides.email ?? "jordan@example.com");
+  await form.locator('textarea[name="parts"]').fill("Six V5 smart motors, two brains, assorted channel.");
+  await form.locator('input[name="availability"]').fill("Any weekend in November");
+  await form.locator('select[name="handoff"]').selectOption("Drop-off");
+}
+
+test("submitting the donation form with an invalid email does not navigate", async ({
   page,
 }) => {
-  await page.goto("/contribute");
-  const form = page.locator('form[name="sponsor-contact"]');
-  await form.locator('input[name="organization"]').fill("Acme Robotics");
-  await form.locator('input[name="contact-name"]').fill("Jordan Lee");
-  await form.locator('input[name="email"]').fill("not-an-email");
-  await form.locator('select[name="sponsorship-level"]').selectOption("Gold");
-  await form.locator('textarea[name="message"]').fill("Interested in sponsoring.");
+  await page.goto("/parts");
+  const form = page.locator('form[name="parts-donation"]');
+  await fillDonationForm(form, { email: "not-an-email" });
   await form.locator('button[type="submit"]').click();
   await page.waitForTimeout(300);
-  await expect(page).toHaveURL(/\/contribute/);
+  await expect(page).toHaveURL(/\/parts/);
   const emailIsValid = await form
     .locator('input[name="email"]')
     .evaluate((el) => (el as HTMLInputElement).checkValidity());
@@ -107,24 +124,20 @@ test("submitting the sponsor form with an invalid email does not navigate", asyn
 // native POST navigation, native `required` validation, honeypot
 // reachability — against a temporary fixture, then deleted it, leaving
 // zero permanent coverage of that path. These two tests are that
-// permanent coverage, exercised against the real sponsor-contact form
-// rendered on /contribute. A separate browser context is required (not
-// just a page) because `javaScriptEnabled` can only be set at context
-// creation time.
+// permanent coverage, exercised against the real parts-donation form
+// rendered on /parts. A separate browser context is required (not just a
+// page) because `javaScriptEnabled` can only be set at context creation
+// time.
 test.describe("no-JavaScript submission path", () => {
-  test("a validly-filled sponsor form performs a real navigation to /thanks", async ({
+  test("a validly-filled donation form performs a real navigation to /thanks", async ({
     browser,
   }) => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     try {
       const page = await context.newPage();
-      await page.goto("/contribute");
-      const form = page.locator('form[name="sponsor-contact"]');
-      await form.locator('input[name="organization"]').fill("Acme Robotics");
-      await form.locator('input[name="contact-name"]').fill("Jordan Lee");
-      await form.locator('input[name="email"]').fill("jordan@example.com");
-      await form.locator('select[name="sponsorship-level"]').selectOption("Gold");
-      await form.locator('textarea[name="message"]').fill("Interested in sponsoring.");
+      await page.goto("/parts");
+      const form = page.locator('form[name="parts-donation"]');
+      await fillDonationForm(form);
       await form.locator('button[type="submit"]').click();
       await page.waitForURL("**/thanks");
       expect(new URL(page.url()).pathname).toBe("/thanks");
@@ -137,16 +150,13 @@ test.describe("no-JavaScript submission path", () => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     try {
       const page = await context.newPage();
-      await page.goto("/contribute");
-      const form = page.locator('form[name="sponsor-contact"]');
+      await page.goto("/parts");
+      const form = page.locator('form[name="parts-donation"]');
       // "organization" is left empty; every other required field is filled.
-      await form.locator('input[name="contact-name"]').fill("Jordan Lee");
-      await form.locator('input[name="email"]').fill("jordan@example.com");
-      await form.locator('select[name="sponsorship-level"]').selectOption("Gold");
-      await form.locator('textarea[name="message"]').fill("Interested in sponsoring.");
+      await fillDonationForm(form, { organization: "" });
       await form.locator('button[type="submit"]').click();
       await page.waitForTimeout(300);
-      expect(new URL(page.url()).pathname).toBe("/contribute");
+      expect(new URL(page.url()).pathname).toBe("/parts");
     } finally {
       await context.close();
     }
@@ -165,10 +175,13 @@ test.describe("no-JavaScript submission path", () => {
 // and follows the same rules a screen reader does, so it is the check that
 // actually bites.
 //
-// Both pages below render more than one form, and the forms share field
-// names (`email`, `message`, `name`), which is exactly the condition that
-// produces colliding ids if ids are derived from the field name alone.
-const MULTI_FORM_ROUTES = ["/contribute", "/research"];
+// /parts renders two forms that both carry an `email`, and /research
+// renders one manuscript form per entry with its manuscript available,
+// each repeating every field name - exactly the condition that produces
+// colliding ids if ids are derived from the field name alone. /contribute
+// renders a single form today but is kept in the sweep: it is where a
+// second form (sponsorship, say) would most plausibly return.
+const MULTI_FORM_ROUTES = ["/contribute", "/research", "/parts"];
 
 // The duplicate-id sweep runs wider than the form pages. Writing it first
 // showed the same class of bug in a second place: every page that splices

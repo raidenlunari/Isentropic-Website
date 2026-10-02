@@ -1,0 +1,242 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import NetlifyForm from "../components/forms/NetlifyForm.astro";
+import Field from "../components/forms/Field.astro";
+import { site } from "../data/site";
+
+const HANDOFF_OPTIONS = ["Drop-off", "Pickup requested (limited availability)"];
+const PROGRAM_STATUS_OPTIONS = [
+  "Public school",
+  "Private school",
+  "Non-profit community group",
+  "New VEX program",
+];
+---
+
+<BaseLayout
+  title="Parts Redistribution"
+  description="Isentropic Parts Distribution collects unused, legacy, and retired VEX robotics parts from established teams and redistributes them to schools, underfunded programs, and community robotics groups."
+>
+  <h1>Parts Redistribution Program</h1>
+  <p class="intro">
+    Isentropic Parts Distribution (IPD) collects unused, legacy, and
+    retired VEX robotics parts from established teams and redistributes
+    them to schools, underfunded programs, and community robotics groups.
+    Its aim is to eliminate resource barriers in STEM education.
+  </p>
+
+  <h2 class="section-heading">What the program is for</h2>
+  <ol class="aims">
+    <li>
+      <strong>Increase STEM accessibility</strong> by lowering the
+      financial barrier for underprivileged youth to get started with VEX
+      robotics for educational and competition purposes.
+    </li>
+    <li>
+      <strong>Reduce parts waste</strong> by making sure all usable
+      robotics parts from retired teams can be given back to the community
+      to support robotics learning.
+    </li>
+    <li>
+      <strong>Empower local teams</strong> by providing them with not only
+      hardware but also mentorship and guidance to build, compete, and
+      sustain their robotics programs long term.
+    </li>
+  </ol>
+
+  <h2 class="section-heading">Donation pathway</h2>
+  <ol class="pathway">
+    <li>
+      <h3>Collection</h3>
+      <p>
+        Donors, whether retired teams, graduating seniors, event partners,
+        or school districts, complete the donation form below. It asks for
+        contact information and organization name, the parts available to
+        donate, and when they are available, along with whether the donor
+        can drop the parts off or needs them picked up. Pickup is limited.
+      </p>
+    </li>
+    <li>
+      <h3>Processing</h3>
+      <p>
+        Components are sorted into usable, repairable, and recyclable bins.
+        V5 brains, controllers, sensors, motors, and batteries are checked,
+        and dirty or oxidation-prone metal parts are cleaned.
+      </p>
+    </li>
+    <li>
+      <h3>Inventory</h3>
+      <p>Parts are cataloged in an inventory tracker under three categories:</p>
+      <ul>
+        <li><strong>Structure and motion:</strong> steel and aluminum channels, gears, wheels, axles, sprockets.</li>
+        <li><strong>Electronics and power:</strong> brains, smart motors, sensors, cables, chargers.</li>
+        <li><strong>Hardware and pneumatics:</strong> screws, nuts, standoffs, gussets, tubing.</li>
+      </ul>
+    </li>
+    <li>
+      <h3>Distribution</h3>
+      <p>
+        Underfunded or new robotics programs submit the grant request form
+        below, describing the program, the specific parts or equipment it is
+        missing, and a mentor or coach to contact along with the address of
+        its meeting space. Requests are reviewed on a rolling basis, and
+        approved teams are matched with kit bundles based on what the
+        inventory holds.
+      </p>
+    </li>
+  </ol>
+
+  <h2 class="section-heading">Volunteer hours</h2>
+  <p class="section-intro">
+    To recognize the effort involved in preparing a donation, and to keep
+    the processing pipeline moving, the program offers official volunteer
+    or community service hours to donors who organize, clean, and deliver
+    their hardware before hand-off. Hours are awarded case by case.
+  </p>
+
+  <h2 class="section-heading">Donate parts</h2>
+  <p class="section-intro">
+    For teams, individuals, event partners, and school districts with VEX
+    parts to pass on.
+  </p>
+  <div class="form-block">
+    <NetlifyForm name={site.formNames.partsDonation}>
+      <Field
+        idPrefix={site.formNames.partsDonation}
+        label="Organization or team"
+        name="organization"
+        required
+      />
+      <Field idPrefix={site.formNames.partsDonation} label="Contact name" name="contact-name" required />
+      <Field idPrefix={site.formNames.partsDonation} label="Email" name="email" type="email" required />
+      <Field
+        idPrefix={site.formNames.partsDonation}
+        label="Parts available to donate"
+        name="parts"
+        as="textarea"
+        required
+        help="A list or rough inventory: structure, motors, sensors, electronics, hardware, pneumatics, and their condition if known."
+      />
+      <Field
+        idPrefix={site.formNames.partsDonation}
+        label="Date available"
+        name="availability"
+        required
+        help="When the parts can be handed off."
+      />
+      <Field
+        idPrefix={site.formNames.partsDonation}
+        label="Hand-off"
+        name="handoff"
+        as="select"
+        options={HANDOFF_OPTIONS}
+        required
+        help="Pickup is limited; drop-off is preferred where possible."
+      />
+    </NetlifyForm>
+  </div>
+
+  <h2 class="section-heading">Request parts</h2>
+  <p class="section-intro">
+    For underfunded or new robotics programs. Requests are reviewed on a
+    rolling basis.
+  </p>
+  <div class="form-block">
+    <NetlifyForm name={site.formNames.partsRequest}>
+      <Field
+        idPrefix={site.formNames.partsRequest}
+        label="Program or school"
+        name="program"
+        required
+      />
+      <Field
+        idPrefix={site.formNames.partsRequest}
+        label="Program status"
+        name="program-status"
+        as="select"
+        options={PROGRAM_STATUS_OPTIONS}
+        required
+      />
+      <Field
+        idPrefix={site.formNames.partsRequest}
+        label="Parts needed"
+        name="parts-needed"
+        as="textarea"
+        required
+        help="Specific part needs or missing equipment."
+      />
+      <Field idPrefix={site.formNames.partsRequest} label="Mentor or coach name" name="coach-name" required />
+      <Field idPrefix={site.formNames.partsRequest} label="Email" name="email" type="email" required />
+      <Field
+        idPrefix={site.formNames.partsRequest}
+        label="Meeting space address"
+        name="meeting-address"
+        as="textarea"
+        required
+        help="Where the program meets, for delivery of an approved kit bundle."
+      />
+    </NetlifyForm>
+  </div>
+</BaseLayout>
+
+<style>
+  .intro,
+  .section-intro {
+    max-width: var(--measure-prose);
+    margin: 0 0 24px;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--foreground);
+  }
+
+  .section-intro {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .section-heading {
+    margin: 48px 0 16px;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 400;
+  }
+  .section-heading:first-of-type {
+    margin-top: 40px;
+  }
+
+  .aims,
+  .pathway {
+    max-width: var(--measure-prose);
+    margin: 0 0 24px;
+    padding-left: 24px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .aims li + li,
+  .pathway li + li {
+    margin-top: 12px;
+  }
+
+  .pathway h3 {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .pathway p,
+  .pathway ul {
+    margin: 0 0 8px;
+  }
+  .pathway ul {
+    padding-left: 20px;
+  }
+  .pathway li > *:last-child {
+    margin-bottom: 0;
+  }
+
+  .form-block {
+    max-width: var(--measure-prose);
+    margin: 0 0 24px;
+  }
+</style>

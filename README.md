@@ -1,9 +1,9 @@
 # Isentropic Robotics website
 
 A static site for Isentropic Robotics, a competitive robotics nonprofit,
-built with [Astro](https://astro.build). It publishes five pages, a
+built with [Astro](https://astro.build). It publishes six pages, a
 blog, and a content-driven set of board members, events, research
-entries, products, and volunteer roles, backed by three Netlify forms.
+entries, products, and volunteer roles, backed by four Netlify forms.
 
 For editing site content — blog posts, board members, events, research,
 products, and roles — see [`CONTENT-GUIDE.md`](./CONTENT-GUIDE.md). This
@@ -140,18 +140,21 @@ if the domain ever changes.
 
 ### Form submissions
 
-The site's three forms (sponsor inquiries, manuscript requests, and
-volunteer applications) are Netlify Forms — plain HTML forms with a
+The site's four forms (parts donations and parts grant requests on
+`/parts`, manuscript requests on `/research`, and volunteer applications
+on `/contribute`) are Netlify Forms — plain HTML forms with a
 `data-netlify="true"` attribute, requiring no backend code or database
 here. Submissions are collected under the **Forms** section of the
 site's Netlify dashboard, and are not written anywhere in this
 repository. Email notifications for new submissions are also configured
-there, not in code.
+there, not in code. Sponsorship inquiries are deliberately not a form:
+the Contribute page directs them to the contact address in
+`src/data/site.ts`.
 
 Netlify registers a form and its fields by parsing deployed HTML at build
 time. Because the manuscript-request form is rendered once per research
 entry, no single page is guaranteed to contain every field, so
-`public/__forms.html` declares all three forms with every field name as a
+`public/__forms.html` declares all four forms with every field name as a
 stub that is never linked from the site. **A field name that exists on a
 real form but not in that stub is silently dropped from real
 submissions** — the site still builds and nothing looks wrong locally. If
@@ -167,14 +170,15 @@ src/
   content/       # Markdown content collections (blog, board, events,
                   # research, products, roles) — see CONTENT-GUIDE.md
   content.config.ts  # Zod schemas for every collection above
-  pages/         # Astro routes
+  pages/         # Astro routes (/, /community, /parts, /research,
+                  # /products, /contribute, /thanks, /blog/<slug>)
   components/    # Shared and per-feature Astro components
   layouts/       # Page shells (BaseLayout, ArticleLayout)
   lib/           # Framework-free helpers (sorting/filtering, dates,
                   # taxonomy, rehype plugins)
   styles/        # Global, unscoped CSS (tokens, prose)
-public/          # Static files served as-is (images, the sponsor
-                  # packet PDF, favicon)
+public/          # Static files served as-is (board headshots, research
+                  # figures, favicon)
   __forms.html   # Netlify's form-detection stub — every form and every
                   # field name, kept in step with the real forms (see
                   # "Form submissions" above)

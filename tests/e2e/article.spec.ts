@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const ARTICLE_PATH = "/blog/2026-08-12-summer-camp-program-report";
+const ARTICLE_PATH = "/blog/2026-10-02-state-estimation-paper";
 
 test("article renders in the reading layer", async ({ page }) => {
   await page.goto(ARTICLE_PATH);
@@ -27,20 +27,21 @@ test("an unknown slug excluded by the content loader's glob returns 404", async 
   expect(response?.status()).toBe(404);
 });
 
-// src/content/blog/2026-08-20-fall-build-season-preview.md has draft: true
-// and an ordinary (non-underscore) filename, so the loader's glob includes
-// it and only publishedPosts() in getStaticPaths keeps it off the site.
-// Deleting `publishedPosts(...)` from src/pages/blog/[...slug].astro turns
-// this test red - confirmed by hand before committing; see
-// task-12-report.md for the failing output.
+// src/content/blog/2026-10-02-string-based-differential-elevator.md has
+// draft: true and an ordinary (non-underscore) filename, so the loader's
+// glob includes it and only publishedPosts() in getStaticPaths keeps it off
+// the site. Deleting `publishedPosts(...)` from
+// src/pages/blog/[...slug].astro turns this test red.
 test("draft posts do not get a route, and are excluded from the homepage", async ({
   page,
 }) => {
-  const response = await page.goto("/blog/2026-08-20-fall-build-season-preview");
+  const response = await page.goto("/blog/2026-10-02-string-based-differential-elevator");
   expect(response?.status()).toBe(404);
 
   await page.goto("/");
-  await expect(page.getByText("Fall build season preview")).toHaveCount(0);
+  await expect(
+    page.getByText("Design and kinematic analysis of a string-based differential elevator"),
+  ).toHaveCount(0);
 });
 
 test("prose column does not exceed its measure", async ({ page }) => {
@@ -57,7 +58,7 @@ test("article metadata block shows the publish date and contact email", async ({
   await page.goto(ARTICLE_PATH);
   const meta = page.locator(".article-meta");
   await expect(meta).toContainText("Published");
-  await expect(meta).toContainText("August 12, 2026");
+  await expect(meta).toContainText("October 2, 2026");
   await expect(meta.locator("a[href='mailto:contact@isentropic.tech']")).toBeVisible();
 });
 
@@ -85,7 +86,7 @@ test("the article title is measurably EB Garamond, not a fallback", async ({
       c.font = `${size} ${family}`;
       return c.measureText(text).width;
     };
-    const probe = "Summer camp program report";
+    const probe = "Reliability-oriented evaluation of state estimation on VEX V5";
     const inFace = measure(probe, cs.fontFamily, cs.fontSize);
     const inFallback = measure(probe, "Georgia, serif", cs.fontSize);
     return inFace / inFallback;
@@ -115,11 +116,11 @@ test("the article body is measurably Source Sans 3, not a fallback", async ({
   expect(ratio).not.toBeCloseTo(1, 3);
 });
 
-// The 2026-08-12 post is enriched with representative Markdown (headings,
-// lists, a blockquote, inline code, a fenced code block, a table, and a
-// link) specifically so the reading layer's heading, list, and scroll
-// rules are exercised by real content and a committed test rather than
-// staying proven only in principle.
+// The state-estimation paper post carries representative Markdown
+// (nested headings, lists, a fenced code block, two tables, a figure, and
+// links) drawn from the paper itself, so the reading layer's heading,
+// list, and scroll rules are exercised by real content and a committed
+// test rather than staying proven only in principle.
 test("headings render in the reading layer, and the article has exactly one h1", async ({
   page,
 }) => {
@@ -188,7 +189,10 @@ test("the table keeps its table accessibility role while its wrapper scrolls", a
   page,
 }) => {
   await page.goto(ARTICLE_PATH);
-  await expect(page.getByRole("table")).toHaveCount(1);
+  // The post carries two tables: the physical-trial results and nothing
+  // else wide enough to need scrolling. Both must keep their role.
+  const tables = page.getByRole("table");
+  expect(await tables.count()).toBeGreaterThan(0);
 
   const display = await page
     .locator(".prose table")

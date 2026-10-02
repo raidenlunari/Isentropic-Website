@@ -1,9 +1,13 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { entries as contentEntries, isTrue } from "./content";
+
+const openRoleCount = () =>
+  contentEntries("roles").filter((role) => isTrue(role, "open")).length;
 
 const ROUTES = [
-  "/", "/community", "/research", "/products", "/contribute",
-  "/thanks", "/blog/2026-08-12-summer-camp-program-report",
+  "/", "/community", "/parts", "/research", "/products", "/contribute",
+  "/thanks", "/blog/2026-10-02-state-estimation-paper",
 ];
 
 for (const route of ROUTES) {
@@ -22,11 +26,17 @@ for (const route of ROUTES) {
   });
 }
 
+// Every disclosure is opened before measuring. A closed <details> renders
+// none of its body, so a table or an unbreakable URL inside an entry can
+// only widen the page once a visitor expands it - which is exactly when
+// this check has to hold, and exactly what a closed-state measurement
+// cannot see.
 for (const width of [360, 768, 1440]) {
-  test(`no horizontal overflow at ${width}px`, async ({ page }) => {
+  test(`no horizontal overflow at ${width}px, with every disclosure open`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     for (const route of ROUTES) {
       await page.goto(route);
+      await page.$$eval("details", (els) => els.forEach((el) => (el.open = true)));
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
       );
@@ -88,7 +98,10 @@ test("product entry bodies nest strictly under their entry's h3 title", async ({
 test("role bodies nest strictly under their role's h3 title", async ({ page }) => {
   await page.goto("/contribute");
   const entries = await headingLevelsPerEntry(page, ".role");
-  expect(entries.length).toBeGreaterThan(0);
+  // The expected count comes from the role files rather than a literal:
+  // with no open role, the page lists none and there is nothing to nest.
+  // The assertion engages again the moment a role is listed.
+  expect(entries.length).toBe(openRoleCount());
   for (const levels of entries) {
     const [titleLevel, ...bodyLevels] = levels;
     expect(titleLevel).toBe(3);
@@ -110,11 +123,20 @@ test("community events carry no headings (unaffected by the heading-nesting plug
   expect(headingsInEvents).toBe(0);
 });
 
+// Asserted structurally rather than as a pinned sequence: the title is
+// the page's only h1, the body's first heading is an h2 (so the shift the
+// plugin applies to entry bodies did NOT touch this article), and every
+// later body heading is an h2 or an h3 with at least one h3 present. A
+// shifted article would start its body at h4 and fail the second check.
 test("blog article headings are unshifted (h1 title, h2/h3 body as authored)", async ({ page }) => {
-  await page.goto("/blog/2026-08-12-summer-camp-program-report");
+  await page.goto("/blog/2026-10-02-state-estimation-paper");
   const levels = await page.$$eval("main h1,main h2,main h3,main h4,main h5,main h6", (hs) =>
     hs.map((h) => Number(h.tagName.slice(1))),
   );
   expect(levels[0]).toBe(1);
-  expect(levels.slice(1)).toEqual([2, 3, 2]);
+  const body = levels.slice(1);
+  expect(body.length).toBeGreaterThan(1);
+  expect(body[0]).toBe(2);
+  expect(body.every((level) => level === 2 || level === 3)).toBe(true);
+  expect(body).toContain(3);
 });

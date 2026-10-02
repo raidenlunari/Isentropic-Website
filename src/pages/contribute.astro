@@ -1,5 +1,4 @@
 ---
-import fs from "node:fs";
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Disclosure from "../components/Disclosure.astro";
@@ -8,28 +7,17 @@ import Field from "../components/forms/Field.astro";
 import { openRoles, groupRolesByCategory } from "../lib/posts";
 import { site } from "../data/site";
 
-const SPONSORSHIP_LEVELS = ["Platinum", "Gold", "Silver", "Bronze", "In-kind"];
-
 // The open-ended catch-all option applicants use when none of the listed
 // roles fit. The literal angle brackets are intentional — Astro escapes
 // them automatically wherever this string is interpolated as text, so it
 // renders as visible characters rather than being parsed as markup.
 const OPEN_ENDED_ROLE = "<insert-role-you-excel-at/>";
 
-const packetPath = "public" + site.sponsorPacket;
-let packetStats: ReturnType<typeof fs.statSync>;
-try {
-  packetStats = fs.statSync(packetPath);
-} catch (cause) {
-  throw new Error(
-    `Sponsor packet not found at "${packetPath}". Add the PDF there, or ` +
-      `update site.sponsorPacket in src/data/site.ts to point at the ` +
-      `right file.`,
-    { cause },
-  );
-}
-const packetSizeLabel = `${Math.max(1, Math.round(packetStats.size / 1024))} KB`;
-
+// While no role file exists, Astro logs "The collection "roles" does not
+// exist or is empty" during the build. That is expected, not an error:
+// the collection is declared in content.config.ts and the page handles
+// the empty case below. Adding a role file (CONTENT-GUIDE.md Task 8)
+// silences it.
 const allRoles = await getCollection("roles");
 const open = openRoles(allRoles);
 const roleGroups = await Promise.all(
@@ -43,96 +31,94 @@ const roleGroups = await Promise.all(
     ),
   })),
 );
-const roleOptions = [
-  ...roleGroups.flatMap((group) => group.roles.map(({ item }) => item.data.title)),
-  OPEN_ENDED_ROLE,
-];
+const openRoleTitles = roleGroups.flatMap((group) =>
+  group.roles.map(({ item }) => item.data.title),
+);
+// With no role currently listed, a select whose only entry is the
+// open-ended option would be a menu with one choice. The role field is
+// then a free-text input instead, under the same field name so the
+// Netlify detection stub (public/__forms.html) still matches. Listing a
+// role (CONTENT-GUIDE.md Task 8) turns the field back into the select.
+const roleOptions = [...openRoleTitles, OPEN_ENDED_ROLE];
+const hasListedRoles = openRoleTitles.length > 0;
 ---
 
 <BaseLayout
   title="Contribute"
-  description="How to sponsor Isentropic Robotics or volunteer with its mentoring, instruction, and outreach programs."
+  description="How to sponsor Isentropic Robotics by email, or volunteer with its camp, parts redistribution, and mentorship programs."
 >
   <h1>Contribute</h1>
   <p class="intro">
-    Isentropic Robotics relies on sponsorship and volunteer time in roughly
-    equal measure: sponsorship funds materials, competition fees, and
-    travel, while volunteers run the mentoring, instruction, and outreach
-    that make up the organization's programs. Both are described below.
+    Isentropic Robotics is a registered 501(c)(3) nonprofit supported by
+    sponsors and by volunteers. Both ways of contributing are described
+    below.
   </p>
 
   <h2 class="section-heading">Sponsor</h2>
   <p class="section-intro">
-    Sponsorship is organized into a small set of tiers, each carrying
-    different recognition and involvement in the organization's events.
-    The packet linked below describes each tier's benefits along with the
-    program's budget and history. Organizations interested in a
-    custom or in-kind arrangement are welcome to describe it in the
-    message field of the form.
+    Sponsorship inquiries are handled by email. Write to <a class="sponsor-email" href={`mailto:${site.email}`}>{site.email}</a> with
+    a note on your organization and the kind of support you have in mind,
+    whether financial, in-kind, or a custom arrangement, and the
+    organization will reply with details.
   </p>
-  <p class="packet-link">
-    <a class="packet" href={site.sponsorPacket}>
-      Sponsor packet (PDF, {packetSizeLabel})
-    </a>
-  </p>
-
-  <div class="form-block">
-    <NetlifyForm name={site.formNames.sponsor}>
-      <Field idPrefix={site.formNames.sponsor} label="Organization" name="organization" required />
-      <Field idPrefix={site.formNames.sponsor} label="Contact name" name="contact-name" required />
-      <Field idPrefix={site.formNames.sponsor} label="Email" name="email" type="email" required />
-      <Field
-        idPrefix={site.formNames.sponsor}
-        label="Sponsorship level"
-        name="sponsorship-level"
-        as="select"
-        options={SPONSORSHIP_LEVELS}
-        required
-      />
-      <Field idPrefix={site.formNames.sponsor} label="Message" name="message" as="textarea" required />
-    </NetlifyForm>
-  </div>
 
   <h2 class="section-heading">Join us</h2>
   <p class="section-intro">
-    Open volunteer roles are grouped by area below. Each listing gives the
-    role's location and expected time commitment along with its
-    responsibilities and qualifications.
+    Volunteers support the East Bay Robotics Camp and the Parts
+    Redistribution Program, including the mentorship and guidance the
+    program offers to the teams that receive parts. Applications are open
+    for any of these areas, and for any other role an applicant can make a
+    case for.
+    {hasListedRoles
+      ? " Open roles are grouped by area below, each with its location and expected time commitment along with its responsibilities and qualifications."
+      : " No specific roles are listed at the moment; describe the role you are applying for in the form."}
   </p>
 
-  <div class="role-groups">
-    {roleGroups.map(({ category, roles }) => (
-      <Disclosure summary={category} meta={`${roles.length} open`}>
-        <ul class="role-list">
-          {roles.map(({ item, Content }) => (
-            <li class="role">
-              <h3 class="role-title">{item.data.title}</h3>
-              <p class="role-meta">
-                {item.data.location} · {item.data.commitment}
-              </p>
-              <div class="role-body">
-                <Content />
-              </div>
-            </li>
-          ))}
-        </ul>
-      </Disclosure>
-    ))}
-  </div>
+  {hasListedRoles && (
+    <div class="role-groups">
+      {roleGroups.map(({ category, roles }) => (
+        <Disclosure summary={category} meta={`${roles.length} open`}>
+          <ul class="role-list">
+            {roles.map(({ item, Content }) => (
+              <li class="role">
+                <h3 class="role-title">{item.data.title}</h3>
+                <p class="role-meta">
+                  {item.data.location} · {item.data.commitment}
+                </p>
+                <div class="role-body">
+                  <Content />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </Disclosure>
+      ))}
+    </div>
+  )}
 
   <h3 class="form-heading">Apply</h3>
   <div class="form-block">
     <NetlifyForm name={site.formNames.application} multipart>
       <Field idPrefix={site.formNames.application} label="Name" name="name" required />
       <Field idPrefix={site.formNames.application} label="Email" name="email" type="email" required />
-      <Field
-        idPrefix={site.formNames.application}
-        label="Role"
-        name="role"
-        as="select"
-        options={roleOptions}
-        required
-      />
+      {hasListedRoles ? (
+        <Field
+          idPrefix={site.formNames.application}
+          label="Role"
+          name="role"
+          as="select"
+          options={roleOptions}
+          required
+        />
+      ) : (
+        <Field
+          idPrefix={site.formNames.application}
+          label="Role"
+          name="role"
+          required
+          help="The role or area you are applying for."
+        />
+      )}
       <Field
         idPrefix={site.formNames.application}
         label="Links"
@@ -174,11 +160,6 @@ const roleOptions = [
   }
   .section-heading:first-of-type {
     margin-top: 40px;
-  }
-
-  .packet-link {
-    margin: 0 0 32px;
-    font-size: 14px;
   }
 
   .form-block {

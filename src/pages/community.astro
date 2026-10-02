@@ -30,16 +30,17 @@ const communityUpdates = withYearMarkers(
 
 <BaseLayout
   title="Community"
-  description="A calendar of workshops, scrimmages, and outreach events, along with updates on the mentorship and education programs that connect Isentropic Robotics to its community."
+  description="Isentropic Robotics' community programs: the East Bay Robotics Camp, the Parts Redistribution Program, and updates on both."
 >
   <h1>Community</h1>
   <p class="intro">
-    Isentropic Robotics runs a season-round calendar of workshops,
-    scrimmages, and outreach events alongside its competition program, and
-    partners with local schools and volunteer mentors to extend that work
-    beyond the team itself. The timeline below records those events; the
-    updates that follow report on the outreach, mentorship, and education
-    programs that connect the team to the wider community.
+    Isentropic Robotics runs two community programs. The East Bay Robotics
+    Camp teaches competitive robotics fundamentals, robot documentation,
+    and robot programming over the summer. The <a href="/parts">Parts Redistribution Program</a> collects
+    retired VEX parts from established teams and passes them, with
+    mentorship, to schools and programs that need them. The timeline below
+    records the organization's events; the updates that follow report on
+    the programs.
   </p>
   <h2>Community events</h2>
   <div class="events">
@@ -57,22 +58,26 @@ const communityUpdates = withYearMarkers(
     </Rail>
   </div>
 
-  <h2>Community updates</h2>
-  <div class="updates">
-    <Rail>
-      {communityUpdates.map(({ item, yearMarker }) => (
-        <RailItem tier={item.data.tier} yearMarker={yearMarker}>
-          <PostCard
-            href={`/blog/${item.id}/`}
-            title={item.data.title}
-            date={item.data.date}
-            summary={item.data.summary}
-            tier={item.data.tier}
-          />
-        </RailItem>
-      ))}
-    </Rail>
-  </div>
+  {communityUpdates.length > 0 && (
+    <>
+      <h2>Community updates</h2>
+      <div class="updates">
+        <Rail>
+          {communityUpdates.map(({ item, yearMarker }) => (
+            <RailItem tier={item.data.tier} yearMarker={yearMarker}>
+              <PostCard
+                href={`/blog/${item.id}/`}
+                title={item.data.title}
+                date={item.data.date}
+                summary={item.data.summary}
+                tier={item.data.tier}
+              />
+            </RailItem>
+          ))}
+        </Rail>
+      </div>
+    </>
+  )}
 </BaseLayout>
 
 <style>

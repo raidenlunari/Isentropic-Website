@@ -129,8 +129,9 @@ post well before it is ready and save your progress at any point without
 it appearing on the live site by accident.
 
 There is a real example of this in the repository already, at
-`src/content/blog/2026-08-20-fall-build-season-preview.md` — open it to
-see what an in-progress post looks like.
+`src/content/blog/2026-10-02-string-based-differential-elevator.md`, a
+placeholder for the announcement of a paper that has not yet been
+written — open it to see what an in-progress post looks like.
 
 1. Open the post's file, as described above.
 2. Find the `draft` field in the frontmatter and set it to `true`.
@@ -311,17 +312,24 @@ template defaults new roles to `order: 0`, so copying it and leaving
 that default in place is the easiest way to create such a tie by
 accident.
 
-The roles in the repository today avoid this by giving each category its
-own block of numbers: Engineering uses `0` and `1`, Education uses `10`
-and `11`. Follow the same pattern. Before saving a new role, look at the
-`order` values already used by roles in its category and pick a value
-that continues that category's own block (for example, one higher than
-the largest `order` already used there), rather than leaving the
-template's default of `0` in place. If you want to reorder roles within
-one category without disturbing the others, change their `order` numbers
-by small amounts relative to each other, staying inside that category's
-block, and check the Contribute page afterward to confirm the category
-sections still appear in the order you expect.
+Avoid this by giving each category its own block of numbers: for
+example, `0` to `9` for the first category you create, `10` to `19` for
+the second, and so on. Before saving a new role, look at the `order`
+values already used by roles in its category and pick a value that
+continues that category's own block (for example, one higher than the
+largest `order` already used there), rather than leaving the template's
+default of `0` in place. If you want to reorder roles within one category
+without disturbing the others, change their `order` numbers by small
+amounts relative to each other, staying inside that category's block,
+and check the Contribute page afterward to confirm the category sections
+still appear in the order you expect.
+
+**No roles are listed at the moment.** While that is the case, the
+Contribute page says so and the application form's role field is a plain
+text box where applicants describe the role they want. The moment you
+save a role file with `open: true`, the page lists it and the role field
+turns into a menu of open roles (plus the open-ended option). You do not
+need to change anything else for that switch to happen.
 
 To retire a role that is no longer accepting applicants, **do not delete
 its file.** Instead:
@@ -333,27 +341,27 @@ its file.** Instead:
    history — stays in the repository, ready to be reopened later by
    setting `open` back to `true`.
 
-## Task 9: Replace the sponsor packet PDF
+## Task 9: Change the contact email address
 
-**Folder:** `public/files/`
+**File:** `src/data/site.ts`
 
-1. Go to the `public/files/` folder in the repository — the folder
-   listing, not the PDF file itself.
-2. Click "Add file," then "Upload files," and upload the new PDF using
-   the exact same file name, `isentropic-sponsor-packet.pdf`. Uploading
-   a file under a name that already exists replaces the old one.
-3. Commit the change, as described above. There is nothing else to
-   update — the "Sponsor packet (PDF, ... KB)" file size shown next to
-   the download link on the Contribute page is calculated automatically
-   from the file itself, so it will reflect the new file's size the next
-   time the site rebuilds.
+Sponsorship inquiries, the footer, and every article's contact line all
+use one email address, kept in a single place so it only ever has to be
+changed once.
+
+1. Open `src/data/site.ts`.
+2. Find the line starting with `email:` and replace the address between
+   the quotation marks.
+3. Save the file. Every page that shows the address updates on the next
+   automatic rebuild.
 
 ## Task 10: Where form submissions arrive
 
-The site has three forms: sponsor inquiries, manuscript requests, and
-volunteer applications. All submissions are collected by Netlify (the
-service that hosts the site) and are not stored in the repository at
-all — there is no file to check.
+The site has four forms: parts donations and parts grant requests (on
+the Parts Redistribution page), manuscript requests (on the Research
+page), and volunteer applications (on the Contribute page). All
+submissions are collected by Netlify (the service that hosts the site)
+and are not stored in the repository at all — there is no file to check.
 
 To view them, or to set up an email notification whenever a form is
 submitted, log in to the Netlify dashboard, open this site, and go to its
@@ -387,6 +395,11 @@ toolbar. Here is what is available:
   files do.
 - **Lists:** start each line with `-` for a bulleted list, or `1.`,
   `2.`, `3.` for a numbered one.
+- **Images:** upload the image file to a folder under `public/images/`
+  (for example `public/images/research/`), then write
+  `![a description of the image](/images/research/the-file-name.png)`.
+  The text in the square brackets is read aloud to people using a screen
+  reader, so describe what the image shows.
 - **Tables:** write them using the Markdown table syntax shown here:
 
   ```
@@ -401,12 +414,13 @@ toolbar. Here is what is available:
   hidden HTML formatting that looks fine on a computer screen but will
   not scroll properly on a phone; only a table written in Markdown
   syntax, like the example above, gets the site's automatic
-  scroll-on-narrow-screens treatment.
+  scroll-on-narrow-screens treatment. That treatment applies in blog
+  posts, research entries, and product entries alike.
 - **Code:** wrap a short piece of code or a technical term in single
   backticks, like `` `this` ``. For a longer block of code, put three
   backticks on their own line before and after it.
 - **Links:** write `[the text people click](the web address)` — for
-  example, `[our sponsor packet](https://example.org/packet.pdf)`.
+  example, `[the Parts Redistribution page](/parts)`.
 - **Quotes:** start a line with `>` to set it apart as a quotation.
 
 If you are ever unsure how something will look, save your change with

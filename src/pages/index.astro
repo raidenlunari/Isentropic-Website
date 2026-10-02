@@ -72,9 +72,15 @@ const posts = withYearMarkers(
     font-weight: 400;
   }
 
+  /* Fixed-width tracks rather than a four-column split: with two board
+     members, `repeat(4, 1fr)` would leave half the row empty, and
+     `auto-fill, 1fr` would stretch two cards (and their 400px headshots)
+     across the full 1120px column. Each card takes one 260px track, the
+     row fills from the left, and a third or fourth member simply takes
+     the next track. */
   .board-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(220px, 260px));
     gap: 16px;
     margin: 0 0 48px;
     padding: 0;
@@ -89,15 +95,9 @@ const posts = withYearMarkers(
     width: 100%;
   }
 
-  @media (max-width: 1024px) {
-    .board-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
   @media (max-width: 640px) {
     .board-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 320px);
     }
   }
 </style>

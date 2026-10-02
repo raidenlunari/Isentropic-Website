@@ -79,3 +79,76 @@
   font-size: 22px;
   font-weight: 400;
 }
+
+/* Entry bodies are Markdown, so they can carry tables and images just as
+   blog articles can. prose.css only styles those inside `.prose`, which
+   these chrome-layer pages never use, so an unstyled table here would
+   render at its natural width and push a narrow viewport into horizontal
+   scroll. The rehype-wrap-tables plugin wraps every table in
+   `.table-scroll`; that wrapper scrolls, and the table keeps
+   `display: table` so it retains its accessibility roles (see the note on
+   `.prose .table-scroll` in prose.css). */
+.research-entry .table-scroll,
+.product .table-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+  margin: 0 0 12px;
+}
+
+/* Cells wrap, unlike the nowrap cells in prose.css: a paper's comparison
+   table of sentence-length cells would otherwise run to several screen
+   widths even on a desktop. The minimum width keeps a five-column table
+   of numbers from being squeezed to one word per line on a phone; past
+   that width the wrapper scrolls instead. */
+.research-entry table,
+.product table {
+  display: table;
+  width: 100%;
+  min-width: 560px;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.research-entry th,
+.research-entry td,
+.product th,
+.product td {
+  border: 1px solid var(--border-soft);
+  padding: 4px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.research-entry th,
+.product th {
+  background: var(--background);
+  font-weight: 600;
+}
+
+/* Reference lists carry DOI and documentation URLs with no break
+   opportunities. At a 360px viewport the disclosure body is roughly
+   250px wide, so one such URL would widen the whole page unless it is
+   allowed to break mid-token. `anywhere` only breaks a word that would
+   otherwise overflow, so ordinary prose is unaffected. */
+.research-entry .disclosure-body,
+.product .disclosure-body {
+  overflow-wrap: anywhere;
+}
+
+.research-entry .disclosure-body img,
+.product .disclosure-body img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 12px 0 4px;
+  border: 1px solid var(--border-soft);
+}
+
+.research-entry .disclosure-body ul,
+.research-entry .disclosure-body ol,
+.product .disclosure-body ul,
+.product .disclosure-body ol {
+  margin: 0 0 8px;
+  padding-left: 20px;
+}

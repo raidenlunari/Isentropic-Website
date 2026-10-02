@@ -34,9 +34,18 @@ test("manuscript form appears only where the manuscript is available", async ({ 
   );
 });
 
-test("research updates include the multi-topic post", async ({ page }) => {
+// The expected titles are the published posts whose `topics` include
+// `research`, read from the blog files. A post carrying several topics
+// (CONTENT-GUIDE.md Task 1) appears here as well as on its other pages;
+// one carrying none of them must not.
+test("research updates list exactly the posts carrying the research topic", async ({
+  page,
+}) => {
   await page.goto("/research");
+  const expected = publishedPostsWithTopic("research")
+    .map((entry) => text(entry, "title"))
+    .sort();
+  expect(expected.length).toBeGreaterThan(0);
   const titles = await page.locator(".updates .title").allTextContents();
-  expect(titles.length).toBe(publishedPostsWithTopic("research").length);
-  expect(titles.join(" ")).toContain("Vision");
+  expect(titles.sort()).toEqual(expected);
 });

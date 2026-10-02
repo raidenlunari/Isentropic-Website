@@ -4,7 +4,7 @@ import { entries, field, publishedPosts, text } from "./content";
 test("official description appears verbatim", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator(".intro")).toHaveText(
-    "Isentropic Robotics fosters STEM education through support for competitive robotics and community events for aspiring engineering students.",
+    "Isentropic Robotics is a registered 501(c)(3) non profit which fosters STEM education through support for competitive robotics and community events for aspiring engineering students.",
   );
 });
 

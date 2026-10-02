@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const ROUTES = ["/", "/community", "/research", "/products", "/contribute"];
+const ROUTES = ["/", "/community", "/parts", "/research", "/products", "/contribute"];
 
 test("skip link reaches main content", async ({ page }) => {
   await page.goto("/");

@@ -1,9 +1,9 @@
 ---
 name: "Moon Liu"
-role: "Board Member"
+role: "Cofounder and CEO"
 photo: "/images/board/moon-liu.svg"
-alt: "Headshot of Moon Liu"
+alt: "Placeholder headshot for Moon Liu"
 order: 1
 ---
 
-Moon Liu helps coordinate the organization's programs and communications, working closely with team mentors and outreach volunteers to keep the board's plans connected to what teams actually need day to day. Moon's background is in software and controls, and much of the organization's volunteer time comes from balancing that work alongside a full course load.
+Moon Liu, cofounder and CEO of Isentropic Robotics, is a VEX competitor with four years of experience in competition, event management, and community service. Moon has experience working with high-impact VEX organizations like RoboSTEM, Robolytics, and more, and takes an innovation-first perspective for VEX robotics, having independently developed five award-winning mechanisms over the past two years.

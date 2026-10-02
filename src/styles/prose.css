@@ -23,6 +23,14 @@
   margin: 0 0 24px;
 }
 
+/* A pasted URL or DOI has no break opportunities and would otherwise
+   widen the page on a phone. `anywhere` breaks only a token that would
+   overflow its line, so normal words are never split. */
+.prose p,
+.prose li {
+  overflow-wrap: anywhere;
+}
+
 .prose h2,
 .prose h3,
 .prose h4,

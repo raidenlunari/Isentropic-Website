@@ -9,7 +9,7 @@
       time to register forms and their fields. The manuscript-request
       form is instantiated once per research entry at runtime, so no
       single rendered page is guaranteed to contain every field Netlify
-      needs to see; this stub declares all three forms, with every field
+      needs to see; this stub declares all four forms, with every field
       name, so registration does not depend on which pages happen to be
       built.
 
@@ -17,14 +17,6 @@
       exists on a real form but not here is silently dropped from
       submissions.
     -->
-    <form name="sponsor-contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
-      <input name="bot-field" />
-      <input name="organization" />
-      <input name="contact-name" />
-      <input type="email" name="email" />
-      <input name="sponsorship-level" />
-      <textarea name="message"></textarea>
-    </form>
     <form name="manuscript-request" data-netlify="true" netlify-honeypot="bot-field" hidden>
       <input name="bot-field" />
       <input name="manuscript" />
@@ -47,6 +39,24 @@
       <input name="links" />
       <input type="file" name="resume" />
       <textarea name="message"></textarea>
+    </form>
+    <form name="parts-donation" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input name="bot-field" />
+      <input name="organization" />
+      <input name="contact-name" />
+      <input type="email" name="email" />
+      <textarea name="parts"></textarea>
+      <input name="availability" />
+      <input name="handoff" />
+    </form>
+    <form name="parts-request" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input name="bot-field" />
+      <input name="program" />
+      <input name="program-status" />
+      <textarea name="parts-needed"></textarea>
+      <input name="coach-name" />
+      <input type="email" name="email" />
+      <textarea name="meeting-address"></textarea>
     </form>
   </body>
 </html>

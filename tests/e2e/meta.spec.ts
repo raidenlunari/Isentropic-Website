@@ -42,7 +42,7 @@ test("sitemap is generated", async ({ request }) => {
 test("each page carries a distinct title and description", async ({ page }) => {
   const seenTitles = new Set<string>();
   const seenDescriptions = new Set<string>();
-  for (const route of ["/", "/community", "/research", "/products", "/contribute"]) {
+  for (const route of ["/", "/community", "/parts", "/research", "/products", "/contribute"]) {
     await page.goto(route);
     const title = await page.title();
     const desc = await page

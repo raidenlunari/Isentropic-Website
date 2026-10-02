@@ -30,14 +30,13 @@ const productUpdates = withYearMarkers(
 
 <BaseLayout
   title="Products"
-  description="Hardware and software products that teams across the network build on directly, with specifications and related links for each."
+  description="Hardware and software built by Isentropic Robotics members for VEX teams, with specifications and related links for each."
 >
   <h1>Products</h1>
   <p class="intro">
-    The organization maintains a small set of hardware and software
-    products that teams across the network build on directly, rather than
-    reinventing independently. Hardware is listed first, followed by
-    software; each entry expands to its specifications and related links.
+    Products built by Isentropic Robotics members for VEX teams. Hardware
+    is listed first, followed by software; each entry opens to its
+    specifications, requirements, and related links.
   </p>
 
   <h2 class="section-heading">Product entries</h2>
@@ -65,22 +64,26 @@ const productUpdates = withYearMarkers(
     ))}
   </ol>
 
-  <h2 class="section-heading">Product updates</h2>
-  <div class="updates">
-    <Rail>
-      {productUpdates.map(({ item, yearMarker }) => (
-        <RailItem tier={item.data.tier} yearMarker={yearMarker}>
-          <PostCard
-            href={`/blog/${item.id}/`}
-            title={item.data.title}
-            date={item.data.date}
-            summary={item.data.summary}
-            tier={item.data.tier}
-          />
-        </RailItem>
-      ))}
-    </Rail>
-  </div>
+  {productUpdates.length > 0 && (
+    <>
+      <h2 class="section-heading">Product updates</h2>
+      <div class="updates">
+        <Rail>
+          {productUpdates.map(({ item, yearMarker }) => (
+            <RailItem tier={item.data.tier} yearMarker={yearMarker}>
+              <PostCard
+                href={`/blog/${item.id}/`}
+                title={item.data.title}
+                date={item.data.date}
+                summary={item.data.summary}
+                tier={item.data.tier}
+              />
+            </RailItem>
+          ))}
+        </Rail>
+      </div>
+    </>
+  )}
 </BaseLayout>
 
 <style>

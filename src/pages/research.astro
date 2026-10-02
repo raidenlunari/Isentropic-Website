@@ -36,16 +36,15 @@ const manuscriptIdPrefix = (slug: string) =>
 
 <BaseLayout
   title="Research"
-  description="Formal write-ups and progress updates from the research group's work on localization, perception, and match-scoring analysis, shared for reuse across the team network."
+  description="Papers by Isentropic Robotics members on competitive robotics, with results, references, and a form to request each manuscript."
 >
   <h1>Research</h1>
   <p class="intro">
-    The research group studies the hardware and software problems that
-    recur across teams in the network — localization, perception, and
-    match-scoring analysis among them — and publishes its methods and
-    results so any team can evaluate or reuse the work. Entries below
-    list the group's formal write-ups; the updates that follow report on
-    work still in progress.
+    Members of Isentropic Robotics write up their work on competitive
+    robotics as papers. Each entry below gives the abstract, and opens to
+    a plain-language summary, the methods and results, and the reference
+    list. Where the full manuscript can be shared, a request form follows
+    the entry.
   </p>
 
   <h2 class="section-heading">Research entries</h2>
@@ -96,22 +95,26 @@ const manuscriptIdPrefix = (slug: string) =>
     ))}
   </ol>
 
-  <h2 class="section-heading">Research updates</h2>
-  <div class="updates">
-    <Rail>
-      {researchUpdates.map(({ item, yearMarker }) => (
-        <RailItem tier={item.data.tier} yearMarker={yearMarker}>
-          <PostCard
-            href={`/blog/${item.id}/`}
-            title={item.data.title}
-            date={item.data.date}
-            summary={item.data.summary}
-            tier={item.data.tier}
-          />
-        </RailItem>
-      ))}
-    </Rail>
-  </div>
+  {researchUpdates.length > 0 && (
+    <>
+      <h2 class="section-heading">Research updates</h2>
+      <div class="updates">
+        <Rail>
+          {researchUpdates.map(({ item, yearMarker }) => (
+            <RailItem tier={item.data.tier} yearMarker={yearMarker}>
+              <PostCard
+                href={`/blog/${item.id}/`}
+                title={item.data.title}
+                date={item.data.date}
+                summary={item.data.summary}
+                tier={item.data.tier}
+              />
+            </RailItem>
+          ))}
+        </Rail>
+      </div>
+    </>
+  )}
 </BaseLayout>
 
 <style>
